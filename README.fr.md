@@ -46,13 +46,23 @@ Le sous-agent par défaut est Luna avec un effort `max`. Le nombre de threads en
 - `.codex/config.toml` sélectionne le modèle principal et active le travail multi-agent.
 - `.codex/agents/*.toml` définit le modèle, les outils, les limites et le contrat de compte rendu de chaque rôle.
 
+## Installation
+
+Clonez le dépôt dans un répertoire que vous souhaitez utiliser comme projet Codex :
+
+```bash
+git clone https://github.com/masskrdjn/codexskills.git
+cd codexskills
+```
+
+Vous pouvez aussi copier ou fusionner `AGENTS.md`, `.agents/` et `.codex/` à la racine d’un dépôt existant, puis vérifier la configuration de ce projet avant de lui accorder votre confiance dans Codex.
+
 ## Utilisation
 
-1. Copiez ou fusionnez `AGENTS.md`, `.agents/` et `.codex/` à la racine du dépôt à configurer.
-2. Vérifiez les noms de modèles, la politique d’approbation, le mode du bac à sable et la limite de concurrence pour votre environnement.
-3. Accordez votre confiance au projet lorsque Codex le demande ; le fichier `.codex/config.toml` du projet n’est chargé que pour les projets approuvés.
-4. Démarrez une nouvelle tâche Codex depuis ce dépôt.
-5. Demandez à Codex de résumer ses instructions actives si vous souhaitez vérifier leur détection.
+1. Vérifiez les noms de modèles, la politique d’approbation, le mode du bac à sable et la limite de concurrence pour votre environnement.
+2. Accordez votre confiance au projet lorsque Codex le demande ; le fichier `.codex/config.toml` du projet n’est chargé que pour les projets approuvés.
+3. Démarrez une nouvelle tâche Codex depuis ce dépôt.
+4. Demandez à Codex de résumer ses instructions actives si vous souhaitez vérifier leur détection.
 
 Codex détecte les instructions du dépôt dans `AGENTS.md`, les skills locaux dans `.agents/skills` et les agents personnalisés dans `.codex/agents`. Consultez la documentation officielle sur [AGENTS.md](https://developers.openai.com/codex/guides/agents-md), les [skills](https://developers.openai.com/codex/skills), les [sous-agents](https://developers.openai.com/codex/subagents) et la [configuration](https://developers.openai.com/codex/config-reference).
 

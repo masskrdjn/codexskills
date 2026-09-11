@@ -46,13 +46,23 @@ The default subagent is Luna at `max` effort. Concurrency is capped at four spaw
 - `.codex/config.toml` selects the primary model and enables multi-agent work.
 - `.codex/agents/*.toml` defines each role's model, tools, limits, and reporting contract.
 
+## Installation
+
+Clone the repository into a directory you want to use as a Codex project:
+
+```bash
+git clone https://github.com/masskrdjn/codexskills.git
+cd codexskills
+```
+
+Alternatively, copy or merge `AGENTS.md`, `.agents/`, and `.codex/` into the root of an existing repository, then review the configuration for that project before trusting it in Codex.
+
 ## Usage
 
-1. Copy or merge `AGENTS.md`, `.agents/`, and `.codex/` into the root of the repository you want to configure.
-2. Review the model names, approval policy, sandbox mode, and concurrency limit for your environment.
-3. Trust the project when Codex asks; project-scoped `.codex/config.toml` is loaded only for trusted projects.
-4. Start a new Codex task from that repository.
-5. Ask Codex to summarize its active instructions if you want to verify discovery.
+1. Review the model names, approval policy, sandbox mode, and concurrency limit for your environment.
+2. Trust the project when Codex asks; project-scoped `.codex/config.toml` is loaded only for trusted projects.
+3. Start a new Codex task from that repository.
+4. Ask Codex to summarize its active instructions if you want to verify discovery.
 
 Codex discovers repository instructions from `AGENTS.md`, local skills from `.agents/skills`, and custom agents from `.codex/agents`. See the official documentation for [AGENTS.md](https://developers.openai.com/codex/guides/agents-md), [skills](https://developers.openai.com/codex/skills), [subagents](https://developers.openai.com/codex/subagents), and [configuration](https://developers.openai.com/codex/config-reference).
 
