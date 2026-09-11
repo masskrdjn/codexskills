@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-Une configuration Codex propre au projet qui confie le travail à des agents spécialisés uniquement lorsque la délégation devrait préserver la qualité tout en réduisant le coût total ou le délai. L’agent principal reste responsable des décisions, de l’intégration et de la communication avec l’utilisateur.
+Un modèle de configuration Codex qui confie le travail à des agents spécialisés uniquement lorsque la délégation devrait préserver la qualité tout en réduisant le coût total ou le délai. L’agent principal reste responsable des décisions, de l’intégration et de la communication avec l’utilisateur.
 
 ## Politique de routage
 
@@ -56,6 +56,20 @@ cd codexskills
 ```
 
 Vous pouvez aussi copier ou fusionner `AGENTS.md`, `.agents/` et `.codex/` à la racine d’un dépôt existant, puis vérifier la configuration de ce projet avant de lui accorder votre confiance dans Codex.
+
+### Choisir le périmètre : global, projet ou les deux
+
+Il n’est **pas** nécessaire de copier tout ce dépôt dans chaque projet. Placez chaque élément selon sa portée :
+
+| Portée | Emplacement | Cas d’usage |
+| --- | --- | --- |
+| Globale | Répertoire d’accueil de Codex (normalement `~/.codex/`) | Préférences personnelles applicables à tous les dépôts. Placez les instructions partagées dans `AGENTS.md`, les réglages partagés dans `config.toml` et les skills réutilisables dans `skills/`. |
+| Projet | Racine du dépôt | Règles, réglages, skills et rôles d’agents propres à ce codebase. Utilisez la structure `AGENTS.md`, `.agents/` et `.codex/` de ce dépôt comme modèle. |
+| Hybride (recommandé) | Les deux emplacements | Conservez la politique de routage et les valeurs par défaut en global ; ajoutez uniquement les commandes, conventions, restrictions et remplacements spécifiques au projet dans le dépôt. |
+
+Codex charge d’abord les instructions globales, puis les instructions du projet, de la racine du dépôt vers le répertoire courant. Le fichier de projet le plus proche est prioritaire. De même, `.codex/config.toml` peut remplacer des réglages utilisateur, mais Codex ne charge les couches `.codex/` locales qu’après que vous avez accordé votre confiance au projet.
+
+N’ajoutez pas de commandes, secrets, chemins ou exceptions de sécurité propres à un dépôt dans la configuration globale : ils affecteraient tous les projets. Si vous déplacez ce modèle vers `~/.codex/`, fusionnez les réglages utiles avec vos fichiers existants au lieu de les remplacer entièrement.
 
 ## Utilisation
 
