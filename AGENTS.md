@@ -1,4 +1,4 @@
-# Instructions projet — routage B
+# Instructions projet — routage
 
 Priorités : préserver la qualité et la pertinence du résultat, puis réduire le
 coût total, puis le délai, avec quota Astra limité.
@@ -13,12 +13,23 @@ coordination. Toute recherche documentaire comportant plusieurs
 questions ou plusieurs sources passe par `researcher` ; la racine charge
 `quota-orchestrator`, crée effectivement ce sous-agent, puis attend son
 identifiant actif. Elle ne fait pas elle-même la recherche et n'appelle jamais
-`wait` sans enfant actif.
+`wait` sans enfant actif. Le seuil se décide avant la première recherche : une
+seule requête sur une seule source reste à Sol ; dès qu'une deuxième requête,
+une deuxième source ou une deuxième question devient nécessaire, il arrête et
+crée `researcher`. Une recherche déjà étendue ne se requalifie pas après coup
+en consultation ponctuelle.
 Toute recherche locale demandant d'établir une cause en traçant des appelants
 ou un flux à travers plusieurs fichiers ou modules passe de même par `scout`.
 La racine peut seulement inspecter assez pour borner la mission ; elle charge
 `quota-orchestrator`, crée effectivement `scout`, vérifie son identifiant actif
 et l'attend au lieu de réaliser elle-même l'exploration.
+
+Le périmètre confié à un enfant lui est réservé jusqu'à sa réponse : la racine
+n'y lit plus, n'y cherche plus et n'y fige ni plan ni diagnostic. Elle attend,
+ou travaille sur un périmètre disjoint annoncé dans la ligne de triage, ou pose
+à l'utilisateur une question que la réponse attendue ne peut pas changer. Si
+elle constate qu'elle sait déjà conclure sans l'enfant, elle l'interrompt au
+lieu de payer deux fois le même travail.
 
 Un run de mesure avec `Complete = false` a exactement le statut
 `non observable` : ne jamais utiliser ni citer ses tokens ou durées dans une

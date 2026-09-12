@@ -48,6 +48,12 @@ Le routage `researcher` est impératif : créer ce sous-agent avant toute
 consultation ou attente, vérifier qu'un identifiant actif a été retourné, puis
 l'attendre. La racine ne réalise pas elle-même la recherche documentaire
 multiple et n'appelle jamais `wait` sans enfant actif.
+Le seuil se décide avant la première recherche, pas après : une consultation
+est ponctuelle seulement si une seule requête sur une seule source suffit.
+Dès qu'une deuxième requête, une deuxième source ou une deuxième question
+devient nécessaire, arrêter et créer `researcher` avec ce qui est déjà acquis.
+Une recherche déjà étendue ne se requalifie pas après coup en consultation
+ponctuelle pour justifier l'absence de délégation.
 
 Le routage `scout` est impératif lorsqu'il faut établir une cause en traçant
 des appelants ou un flux à travers plusieurs fichiers ou modules. La racine
@@ -70,6 +76,25 @@ charger ce skill uniquement pour annoncer l'absence de délégation.
 Ne pas lancer un enfant puis attendre si effectuer le petit lot directement
 est plus économique. Une attente reste légitime pour un lot substantiel
 dépendant ; ne pas inventer du travail parallèle ni dupliquer celui de l'enfant.
+
+## Pendant qu'un enfant travaille
+
+Le périmètre confié est réservé à l'enfant jusqu'à sa réponse. La racine n'y
+lit plus, n'y cherche plus, et n'y fige ni plan, ni diagnostic, ni choix
+d'architecture. Trois conduites seulement sont admises :
+- attendre ;
+- travailler sur un périmètre disjoint, nommé dans la ligne de triage avant
+  la création ;
+- poser à l'utilisateur une question que la réponse attendue ne peut pas
+  changer ; sinon, attendre cette réponse avant de la formuler.
+
+Reprendre l'exploration en parallèle « pour gagner du temps » double le coût
+et annule le bénéfice annoncé : c'est le cas le plus fréquent de duplication.
+Si la racine s'aperçoit qu'elle sait déjà conclure sans l'enfant, la réponse
+correcte est `interrupt_agent`, pas une seconde exploration menée en même
+temps. Une délégation interrompue tôt est un bon arbitrage, pas un échec.
+Une conclusion établie avant la réponse de l'enfant sur son propre périmètre
+est déclarée comme telle : ne pas présenter son rapport comme l'ayant fondée.
 
 ## Modèles et efforts
 
