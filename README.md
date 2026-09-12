@@ -2,7 +2,7 @@
 
 [Français](README.fr.md)
 
-A project-scoped Codex configuration that routes work to specialized agents only when delegation is likely to preserve quality while reducing total cost or latency. The primary agent remains responsible for decisions, integration, and user communication.
+A Codex configuration template that routes work to specialized agents only when delegation is likely to preserve quality while reducing total cost or latency. The primary agent remains responsible for decisions, integration, and user communication.
 
 ## Routing policy
 
@@ -45,6 +45,31 @@ The default subagent is Luna at `max` effort. Concurrency is capped at four spaw
 - `quota-orchestrator` decides whether delegation is worth its full cost.
 - `.codex/config.toml` selects the primary model and enables multi-agent work.
 - `.codex/agents/*.toml` defines each role's model, tools, limits, and reporting contract.
+
+## Installation
+
+Clone the repository into a directory you want to use as a Codex project:
+
+```bash
+git clone https://github.com/masskrdjn/codexskills.git
+cd codexskills
+```
+
+Alternatively, copy or merge `AGENTS.md`, `.agents/`, and `.codex/` into the root of an existing repository, then review the configuration for that project before trusting it in Codex.
+
+### Choose the scope: global, project, or both
+
+You do **not** need to copy this entire repository into every project. Choose the placement that matches the rule:
+
+| Scope | Put here | Use it for |
+| --- | --- | --- |
+| Global | Your Codex home directory (normally `~/.codex/`) | Personal defaults that should apply in every repository. Put shared instructions in `AGENTS.md`, shared settings in `config.toml`, and reusable skills in `skills/`. |
+| Project | The repository root | Rules, settings, skills, and agent roles that belong only to that codebase. Use this repository's `AGENTS.md`, `.agents/`, and `.codex/` layout as the template. |
+| Hybrid (recommended) | Both locations | Keep the routing policy and defaults global; add only project-specific commands, conventions, restrictions, and overrides to the repository. |
+
+Codex loads global instructions first, then the project instructions from the repository root toward the current directory. The closest project file takes precedence. Likewise, `.codex/config.toml` can override user settings, but Codex loads project-local `.codex/` layers only after you trust the project.
+
+Do not put repository-specific commands, credentials, paths, or security exceptions in your global configuration: they would affect every project. When moving this template to `~/.codex/`, merge the relevant settings with your existing files rather than replacing them wholesale.
 
 ## Usage
 
