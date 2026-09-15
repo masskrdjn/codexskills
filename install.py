@@ -19,7 +19,7 @@ SOURCE = Path(__file__).resolve().parent
 START = "<!-- codexskills:routing-b:start -->"
 END = "<!-- codexskills:routing-b:end -->"
 CONFIG_KEYS = {
-    (): ("model", "model_reasoning_effort", "approval_policy", "sandbox_mode"),
+    (): ("approval_policy", "sandbox_mode"),
     ("features",): ("multi_agent",),
     ("agents",): (
         "enabled",
@@ -85,7 +85,7 @@ def _source_assignments(text: str) -> dict[tuple[tuple[str, ...], str], str]:
                 found[(section, key)] = line.strip()
     expected = {(section, key) for section, keys in CONFIG_KEYS.items() for key in keys}
     if found.keys() != expected:
-        raise InstallError(".codex/config.toml source ne contient pas les neuf clés attendues")
+        raise InstallError(".codex/config.toml source ne contient pas les sept clés attendues")
     return found
 
 

@@ -35,13 +35,13 @@ compter les opérations pour déclencher une délégation.
 
 | Situation | Chemin normal |
 |---|---|
-| Petit travail local, lot déterministe borné ou implémentation locale au contrat explicite | Sol : lecture, modification et validation |
+| Petit travail local, lot déterministe borné ou implémentation locale au contrat explicite | Racine : lecture, modification et validation |
 | Exploration étendue ou indépendante d'un travail utile de la racine | `scout` |
 | Validation assez longue et indépendante pour amortir la coordination | `runner` |
 | Implémentation substantielle ou indépendante dont la délégation est amortie | `builder`, validation ciblée comprise |
-| Consultation documentaire ponctuelle | Sol directement |
+| Consultation documentaire ponctuelle | Racine directement |
 | Recherche documentaire à plusieurs questions ou sources | `researcher` |
-| Raisonnement complexe ou intégration | Sol |
+| Raisonnement complexe ou intégration | Racine |
 | Arbitrage technique difficile, ou décision structurante coûteuse à corriger nécessitant un avis expert | `architect` |
 
 Le routage `researcher` est impératif : créer ce sous-agent avant toute
@@ -63,10 +63,10 @@ l'exploration.
 
 Choisir le rôle le moins coûteux capable de respecter les critères
 d'acceptation sans perte de pertinence, lorsque la coordination est amortie.
-La capacité de Sol à faire le travail lui-même n'interdit pas de déléguer.
+La capacité de la racine à faire le travail elle-même n'interdit pas de déléguer.
 Une petite modification risquée peut demander une revue indépendante ; le
 nombre de fichiers ne détermine ni le niveau nécessaire ni la rentabilité.
-Si une ambiguïté décisive dépasse le rôle choisi, Sol garde cet arbitrage et
+Si une ambiguïté décisive dépasse le rôle choisi, la racine garde cet arbitrage et
 ne transmet que la partie suffisamment définie ; ne pas déléguer à bas coût
 en comptant sur une reprise systématique pour obtenir la qualité attendue.
 
@@ -104,7 +104,7 @@ est déclarée comme telle : ne pas présenter son rapport comme l'ayant fondée
 | `researcher` | `gpt-5.6-luna` | `max` |
 | `runner` | `gpt-5.6-luna` | `medium` |
 | `builder` | `gpt-5.6-terra` | `medium` |
-| Racine | `gpt-5.6-sol` | `medium` |
+| Racine | Modèle et effort choisis par l'utilisateur | Variables |
 | `architect` | `gpt-6-astra` | `low` |
 
 `scout` utilise `high`, plus rapide et légèrement moins coûteux à qualité
@@ -115,7 +115,7 @@ racine. Les fichiers TOML de rôle fixent explicitement modèle et effort ; les
 permissions effectives restent soumises au runtime parent, comme précisé dans
 AGENTS.md. `builder` peut passer à `high` ou `xhigh` sur décision explicite.
 Un générique n'est utilisé que si aucun rôle ne convient ; son défaut reste
-Luna/max, jamais Astra. Tout accès Astra passe par `architect`.
+Luna/max. Un sous-agent Astra passe par `architect`.
 
 ## Transmettre sans perdre les conditions
 
@@ -137,14 +137,14 @@ L'enfant groupe ses lectures indépendantes et répond proportionnellement au
 travail : un résultat simple ne nécessite pas de rapport cérémoniel.
 
 La synthèse conserve les réserves, alternatives conditionnelles et mesures
-nécessaires de l'expert. Sol distingue toute décision nouvelle qu'il ajoute.
+nécessaires de l'expert. La racine distingue toute décision nouvelle qu'elle ajoute.
 Une hypothèse métier non établie reste une hypothèse. Si elle change le choix
 et ne peut pas être résolue par inspection, demander la précision à l'utilisateur
 ou présenter une recommandation conditionnelle, sans fabriquer de fait métier.
 
 ## Validation et arrêt
 
-La validation ciblée appartient à celui qui réalise le changement. Sol lit le
+La validation ciblée appartient à celui qui réalise le changement. La racine lit le
 résultat et inspecte les modifications (diff Git si disponible).
 Ne pas créer un runner pour répéter une validation dont la commande, le
 résultat et l'état pertinent des fichiers/environnement sont connus et
@@ -166,7 +166,8 @@ une vérification ciblée, pas un arbitrage expert à l'aveugle.
 
 ## Consultation Astra
 
-Astra traite uniquement les arbitrages conceptuels ou d'architecture.
+Le rôle `architect`, configuré avec Astra, traite uniquement les arbitrages
+conceptuels ou d'architecture.
 Jamais exploration, lecture répétitive, commande, test, log, retry, modification
 mécanique, problème d'environnement ou choix d'intention de l'utilisateur.
 
@@ -187,7 +188,7 @@ sans écriture ni délégation. Il peut rejeter le cadrage. Son livrable est une
 décision avec conditions, interfaces/invariants utiles, alternatives/risques et
 mesures nécessaires ; environ 80 lignes si cela suffit, sans forcer la longueur.
 Pas de patch ni implémentation complète ; courts extraits d'interface autorisés.
-Sol fait effectuer les mesures manquantes selon le routage sélectif, et ne
+La racine fait effectuer les mesures manquantes selon le routage sélectif, et ne
 reconsulte que si elles changent la décision.
 
 ## Permissions
