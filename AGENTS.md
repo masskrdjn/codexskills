@@ -3,7 +3,9 @@
 Priorités : préserver la qualité et la pertinence du résultat, puis réduire le
 coût total, puis le délai, avec quota Astra limité.
 La racine utilise `quota-orchestrator` lorsqu'une délégation ou un choix de
-palier est utile. Une courte inspection initiale est autorisée avant ce choix.
+palier est utile. Avant ce choix, seul un triage borné et non causal est
+autorisé : inventorier les fichiers ou symboles pertinents sans suivre les
+appelants, ouvrir plusieurs implémentations ni tester des hypothèses.
 Le modèle racine choisi par l'utilisateur reste prioritaire. Une petite tâche
 locale ou consultation documentaire à une seule source reste à la racine
 lorsque le coût de coordination dépasserait l'économie attendue,
@@ -19,11 +21,25 @@ seule requête sur une seule source reste à la racine ; dès qu'une deuxième r
 une deuxième source ou une deuxième question devient nécessaire, il arrête et
 crée `researcher`. Une recherche déjà étendue ne se requalifie pas après coup
 en consultation ponctuelle.
-Toute recherche locale demandant d'établir une cause en traçant des appelants
-ou un flux à travers plusieurs fichiers ou modules passe de même par `scout`.
-La racine peut seulement inspecter assez pour borner la mission ; elle charge
-`quota-orchestrator`, crée effectivement `scout`, vérifie son identifiant actif
-et l'attend au lieu de réaliser elle-même l'exploration.
+Le routage d'une recherche de cause est décidé avant toute exploration du
+code. La racine conserve la recherche seulement si, à partir des informations
+déjà disponibles, la vérification est localisée à un point d'entrée connu et
+peut être effectuée par une lecture directe ou une commande déterministe
+bornée. Elle crée immédiatement `scout` si le point d'entrée doit être
+découvert, s'il faut suivre des appelants, des données ou un état entre
+plusieurs composants, si plusieurs hypothèses causales doivent être
+départagées, ou si la demande porte explicitement sur un flux transversal.
+Pour décider, elle peut uniquement inventorier les fichiers ou symboles
+pertinents ; elle ne commence pas l'enquête. Avant le lancement, elle nomme la
+question confiée, le travail qu'elle n'effectuera pas et la preuve qui arrêtera
+le scout, puis vérifie son identifiant actif et l'attend.
+
+Une délégation économique doit remplacer du travail racine, pas seulement
+ajouter un exécutant moins coûteux. La ligne de triage nomme le livrable
+exclusif de l'enfant, le travail abandonné par la racine, la condition d'arrêt
+et la raison pour laquelle l'économie attendue amortit toute la coordination.
+À défaut, le travail reste à la racine. Après le retour, une vérification
+ponctuelle est permise, mais la racine ne refait pas l'exploration.
 
 Le périmètre confié à un enfant lui est réservé jusqu'à sa réponse : la racine
 n'y lit plus, n'y cherche plus et n'y fige ni plan ni diagnostic. Elle attend,
@@ -44,12 +60,29 @@ pas à leur tour. Ils remontent les décisions nécessaires à la racine.
 La racine délègue à un modèle moins coûteux lorsque la mission est assez
 définie pour préserver qualité et pertinence, et que l'économie attendue
 amortit le cadrage, le contexte, l'intégration et les éventuelles reprises.
-Cela reste valable si la racine sait faire elle-même et doit attendre le résultat.
+La capacité de la racine à faire elle-même le travail n'interdit pas une
+délégation substitutive, mais ne justifie jamais une exécution additive.
 Elle peut aussi déléguer pour une capacité de raisonnement supérieure ou un
 travail indépendant utile en parallèle. Elle annonce brièvement le bénéfice
 attendu ; ni la taille du lot ni le parallélisme ne suffisent à eux seuls.
 Une incertitude décisive sur la capacité du modèle à remplir la mission impose
 de garder le raisonnement concerné à la racine ou de consulter le rôle adapté.
+
+Une tâche locale bornée reste à la racine par défaut. Sa promotion vers un
+sous-agent pour motif économique exige au moins cinq paires de runs complets,
+comparables et randomisés montrant un gain en cache froid, tous agents et
+reviewers inclus. Les résultats en cache chaud sont publiés séparément. Une
+délégation reste possible pour un besoin explicite de capacité, de qualité ou
+de délai, mais elle n'est alors pas présentée comme une économie démontrée.
+
+Ne pas demander de revue indépendante par défaut. Une seule revue ciblée est
+autorisée pour la sécurité, la perte de données, une migration irréversible,
+un contrat public, une contradiction non résolue ou l'absence de test fiable
+sur un comportement critique. Une analyse en lecture seule, une proposition
+ou un changement déterministe à faible risque dont la validation ciblée passe
+ne déclenche pas de revue supplémentaire. Les consommations `guardian_review`
+non déclenchées par le projet sont mesurées séparément et incluses dans le coût
+total, sans être présentées comme un levier directement contrôlable.
 
 Les rôles nommés portent leurs modèles et leurs efforts. Leur `sandbox_mode`
 n'est pas appliqué : le bac à sable du parent prévaut, ne pas compter sur un

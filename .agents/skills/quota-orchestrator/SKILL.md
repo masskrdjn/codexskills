@@ -3,7 +3,7 @@ name: quota-orchestrator
 description: Routage sélectif multi-modèles pour la racine lorsqu'une délégation ou un arbitrage de palier peut améliorer le résultat, le délai ou le coût global. Les tâches locales bornées et consultations documentaires ponctuelles peuvent rester directes. Ne s'applique pas aux sous-agents déjà mandatés.
 ---
 
-# Routage sélectif — variante B
+# Routage sélectif
 
 ## Objectif et périmètre
 
@@ -29,14 +29,16 @@ son rôle et remonte les inconnues qui nécessitent une décision.
 
 ## Choisir le chemin
 
-Une courte inspection initiale est autorisée : grouper les lectures et
-recherches indépendantes, puis décider avec les faits disponibles. Ne pas
-compter les opérations pour déclencher une délégation.
+Le routage est décidé avant toute exploration causale. Un triage borné peut
+inventorier les fichiers ou symboles pertinents, mais ne suit pas les
+appelants, n'ouvre pas plusieurs implémentations et ne teste pas d'hypothèse.
+Ne pas compter les opérations pour déclencher une délégation.
 
 | Situation | Chemin normal |
 |---|---|
 | Petit travail local, lot déterministe borné ou implémentation locale au contrat explicite | Racine : lecture, modification et validation |
-| Exploration étendue ou indépendante d'un travail utile de la racine | `scout` |
+| Point d'entrée connu et vérification directe ou commande déterministe bornée | Racine |
+| Point d'entrée inconnu, traçage transversal ou hypothèses causales concurrentes | `scout` |
 | Validation assez longue et indépendante pour amortir la coordination | `runner` |
 | Implémentation substantielle ou indépendante dont la délégation est amortie | `builder`, validation ciblée comprise |
 | Consultation documentaire ponctuelle | Racine directement |
@@ -55,11 +57,44 @@ devient nécessaire, arrêter et créer `researcher` avec ce qui est déjà acqu
 Une recherche déjà étendue ne se requalifie pas après coup en consultation
 ponctuelle pour justifier l'absence de délégation.
 
-Le routage `scout` est impératif lorsqu'il faut établir une cause en traçant
-des appelants ou un flux à travers plusieurs fichiers ou modules. La racine
-peut seulement inspecter assez pour borner la mission ; elle crée effectivement
-`scout`, vérifie son identifiant actif et l'attend au lieu de réaliser elle-même
-l'exploration.
+La racine crée immédiatement `scout` si le point d'entrée doit être découvert,
+s'il faut suivre des appelants, des données ou un état entre plusieurs
+composants, si plusieurs hypothèses causales doivent être départagées, ou si
+la demande porte explicitement sur un flux transversal. Pour décider, elle
+peut seulement inventorier les fichiers ou symboles pertinents. Elle n'ouvre
+pas plusieurs implémentations, ne suit pas les appelants et ne commence pas à
+tester les hypothèses avant le routage. Avant le lancement, elle nomme la
+question confiée, le travail qu'elle n'effectuera pas et la preuve qui arrêtera
+le scout.
+
+## Porte de substitution
+
+Une délégation économique doit remplacer du travail racine, pas seulement
+ajouter un exécutant moins coûteux.
+
+Avant le lancement, la ligne de triage indique :
+1. le livrable exclusif de l'enfant ;
+2. les lectures, recherches, raisonnements ou validations que la racine
+   n'effectuera plus ;
+3. la condition d'arrêt vérifiable ;
+4. pourquoi l'économie attendue amortit le lancement, le contexte,
+   l'intégration et la validation.
+
+Sans réponse concrète aux quatre points, garder le travail à la racine. Le
+parallélisme ou le prix inférieur du modèle ne suffisent pas.
+
+Après le retour, la racine intègre le résultat sans refaire l'exploration. Une
+vérification ponctuelle d'une preuve est permise ; relire tout le périmètre
+annule la substitution et doit être compté comme une reprise.
+
+Une tâche locale bornée reste à la racine par défaut. Sa promotion vers un
+sous-agent pour motif économique exige au moins cinq paires de runs complets,
+comparables et randomisés montrant un gain en cache froid, tous agents et
+reviewers inclus. Les résultats en cache chaud sont publiés séparément : ils
+peuvent justifier une optimisation de répétition, mais pas la promotion
+générale d'une catégorie de tâches. Une délégation reste possible sans preuve
+économique pour un besoin explicite de capacité, de qualité ou de délai ; elle
+est alors annoncée comme telle et non comme une économie.
 
 Choisir le rôle le moins coûteux capable de respecter les critères
 d'acceptation sans perte de pertinence, lorsque la coordination est amortie.
@@ -70,8 +105,8 @@ Si une ambiguïté décisive dépasse le rôle choisi, la racine garde cet arbit
 ne transmet que la partie suffisamment définie ; ne pas déléguer à bas coût
 en comptant sur une reprise systématique pour obtenir la qualité attendue.
 
-Quand un choix de palier est utile, annoncer une ligne de triage après cette
-inspection et avant la délégation. Pour une simple lecture directe, ne pas
+Quand un choix de palier est utile, annoncer une ligne de triage après le
+triage non causal et avant la délégation. Pour une simple lecture directe, ne pas
 charger ce skill uniquement pour annoncer l'absence de délégation.
 Ne pas lancer un enfant puis attendre si effectuer le petit lot directement
 est plus économique. Une attente reste légitime pour un lot substantiel
@@ -150,10 +185,26 @@ Ne pas créer un runner pour répéter une validation dont la commande, le
 résultat et l'état pertinent des fichiers/environnement sont connus et
 inchangés. Si cet état est incertain, vérifier avant de réutiliser le résultat.
 Après une modification pertinente, un échec ou une nouvelle inquiétude, lancer
-le contrôle nécessaire. Pour un changement à risque (sécurité, perte de données,
-migration, contrat public), conserver une revue indépendante ciblée ; ne pas
-confondre cette revue avec la répétition du même test. Astra n'est pas le testeur
-final et n'exécute pas cette revue de validation.
+le contrôle nécessaire. Ne pas demander de revue indépendante par défaut. Une
+seule revue ciblée est autorisée si le changement touche à la sécurité ou à la
+perte de données, réalise une migration irréversible, modifie un contrat
+public, laisse une contradiction non résolue entre implémentation et
+validation, ou concerne un comportement critique dépourvu de test fiable. Une
+analyse en lecture seule, une proposition ou un changement déterministe à
+faible risque dont la validation ciblée passe ne déclenche pas de revue
+supplémentaire. Astra n'est pas le testeur final et n'exécute pas cette revue.
+
+Les consommations `guardian_review` non déclenchées par le projet sont
+mesurées séparément et incluses dans le coût total. Elles ne sont pas
+présentées comme un levier directement contrôlable par ces règles.
+
+Pour `scout`, la condition d'arrêt normale est la première chaîne causale
+suffisante comportant le point d'entrée, le chemin pertinent, la cause
+localisée et une preuve par code, configuration, log ou test existant. Une
+fois ces éléments obtenus, ne pas rechercher d'autres causes possibles sauf
+contradiction factuelle ou demande explicite. Une mission porte normalement
+sur une seule question causale ; toute extension nécessite un nouveau triage
+par la racine.
 
 L'échec est un livrable valide. Garder les bornes des rôles : runner, trois
 cycles correction/test ; environnement, deux tentatives ; scout, trois

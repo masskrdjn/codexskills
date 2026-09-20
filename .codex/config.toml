@@ -1,4 +1,4 @@
-# Variante B : routage sélectif, runner optimisé après comparaison.
+# Routage sélectif, runner optimisé après comparaison.
 
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
