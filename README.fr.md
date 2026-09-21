@@ -31,6 +31,14 @@ Le sous-agent par défaut est Luna avec un effort `max`. Le nombre de threads en
 .
 ├── AGENTS.md
 ├── .agents/skills/quota-orchestrator/SKILL.md
+├── .agents/plugins/marketplace.json
+├── plugins/codexskills/
+│   ├── .codex-plugin/plugin.json
+│   ├── skills/
+│   │   ├── quota-orchestrator/SKILL.md
+│   │   └── quota-orchestrator-setup/SKILL.md
+│   ├── scripts/install.py
+│   └── templates/
 └── .codex/
     ├── config.toml
     └── agents/
@@ -45,8 +53,48 @@ Le sous-agent par défaut est Luna avec un effort `max`. Le nombre de threads en
 - `quota-orchestrator` détermine si la délégation justifie son coût complet.
 - `.codex/config.toml` sélectionne le modèle principal et active le travail multi-agent.
 - `.codex/agents/*.toml` définit le modèle, les outils, les limites et le contrat de compte rendu de chaque rôle.
+- `.agents/plugins/marketplace.json` expose le catalogue Codex du dépôt.
+- `plugins/codexskills/` contient le manifeste, les deux skills, l'installateur contrôlé et les profils complets distribués comme modèles.
 
-## Installation
+## Installation comme plugin
+
+> [!IMPORTANT]
+> L'installation du plugin ne suffit pas à activer les cinq profils complets.
+> Une configuration globale unique est requise. Sans elle, le
+> plugin le signalera au début des tâches et ne prétendra pas que le routage
+> complet est actif.
+
+Depuis le clone local, pour tester avant publication :
+
+```text
+codex plugin marketplace add .
+codex plugin add codexskills@codexskills
+```
+
+Après publication du dépôt :
+
+```text
+codex plugin marketplace add masskrdjn/codexskills
+codex plugin add codexskills@codexskills
+```
+
+Première étape obligatoire après l'installation, demandez dans Codex :
+
+```text
+Configure les profils complets de codexskills.
+```
+
+Le skill de configuration prévisualise les changements puis installe
+`scout`, `researcher`, `runner`, `builder` et `architect` dans `CODEX_HOME`
+(ou `~/.codex` s'il est absent). Il fusionne les réglages compatibles,
+sauvegarde les fichiers modifiés sous `CODEX_HOME/.codexskills-backup/` et
+s'arrête devant tout avertissement ou profil divergent jusqu'à confirmation.
+Ouvrez ensuite une nouvelle tâche Codex pour charger les profils. L'installation
+du plugin ne modifie aucune configuration et n'utilise aucun hook. Après cette
+configuration, le routage est détecté automatiquement : il n'est pas nécessaire
+de nommer le plugin dans chaque demande.
+
+## Installation sans plugin
 
 Clonez le dépôt dans un répertoire que vous souhaitez utiliser comme projet Codex :
 
@@ -90,10 +138,17 @@ Pour la configuration, `~/.codex/config.toml` fournit les valeurs utilisateur. C
 Python 3.11 ou supérieur est requis. Depuis ce dépôt, exécutez :
 
 ```text
-python install.py [chemin/vers/votre/projet]
+python install.py --global
 ```
 
-Le répertoire courant est utilisé si le chemin est omis. Utilisez `--dry-run` pour prévisualiser chaque changement. L’installateur préserve les instructions et valeurs de configuration existantes, sauvegarde les fichiers modifiés sous `.codexskills-backup/` et avertit au lieu d’écraser les fichiers d’agent ou de skill divergents.
+La structure globale est `AGENTS.md`, `config.toml`, `agents/` et `skills/`
+directement sous `CODEX_HOME` (ou `~/.codex` s'il est absent). Utilisez
+`--dry-run` pour prévisualiser chaque changement. L’installateur préserve les
+instructions et valeurs existantes, sauvegarde les fichiers modifiés sous
+`CODEX_HOME/.codexskills-backup/` et avertit au lieu d’écraser les fichiers
+d’agent ou de skill divergents. Pour une installation projet explicite,
+exécutez `python install.py chemin/vers/votre/projet` ; sans chemin, le
+comportement historique utilise le répertoire courant.
 
 Après l’installation, vérifiez les éventuels avertissements ainsi que les noms de modèles, la politique d’approbation, le mode du bac à sable et la limite de concurrence pour votre environnement. Accordez votre confiance au projet lorsque Codex le demande, puis démarrez une nouvelle tâche Codex depuis ce dépôt afin de reconstruire la chaîne d’instructions. Le fichier `.codex/config.toml` du projet n’est chargé que pour les projets approuvés.
 

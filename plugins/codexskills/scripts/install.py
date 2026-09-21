@@ -15,7 +15,7 @@ from datetime import datetime
 from pathlib import Path
 
 
-SOURCE = Path(__file__).resolve().parent
+SOURCE = Path(__file__).resolve().parent.parent / "templates"
 START = "<!-- codexskills:routing-b:start -->"
 END = "<!-- codexskills:routing-b:end -->"
 CONFIG_KEYS = {

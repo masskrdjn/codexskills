@@ -31,6 +31,14 @@ The default subagent is Luna at `max` effort. Concurrency is capped at four spaw
 .
 ├── AGENTS.md
 ├── .agents/skills/quota-orchestrator/SKILL.md
+├── .agents/plugins/marketplace.json
+├── plugins/codexskills/
+│   ├── .codex-plugin/plugin.json
+│   ├── skills/
+│   │   ├── quota-orchestrator/SKILL.md
+│   │   └── quota-orchestrator-setup/SKILL.md
+│   ├── scripts/install.py
+│   └── templates/
 └── .codex/
     ├── config.toml
     └── agents/
@@ -45,8 +53,47 @@ The default subagent is Luna at `max` effort. Concurrency is capped at four spaw
 - `quota-orchestrator` decides whether delegation is worth its full cost.
 - `.codex/config.toml` selects the primary model and enables multi-agent work.
 - `.codex/agents/*.toml` defines each role's model, tools, limits, and reporting contract.
+- `.agents/plugins/marketplace.json` exposes the repository's Codex catalog.
+- `plugins/codexskills/` contains the manifest, both skills, the controlled installer, and the complete profiles distributed as templates.
 
-## Installation
+## Install as a plugin
+
+> [!IMPORTANT]
+> Installing the plugin alone does not activate the five complete profiles.
+> One-time global setup is required. Until it is complete, the plugin
+> will say so at the start of tasks and will not claim that full routing is
+> active.
+
+From the local checkout, to test before publishing:
+
+```text
+codex plugin marketplace add .
+codex plugin add codexskills@codexskills
+```
+
+After publishing the repository:
+
+```text
+codex plugin marketplace add masskrdjn/codexskills
+codex plugin add codexskills@codexskills
+```
+
+As the required first step after installation, ask Codex:
+
+```text
+Configure the full codexskills profiles.
+```
+
+The setup skill previews the changes, then installs `scout`, `researcher`,
+`runner`, `builder`, and `architect` in `CODEX_HOME` (or `~/.codex` when it is
+unset). It merges compatible settings, backs up modified files under
+`CODEX_HOME/.codexskills-backup/`, and stops on any warning or divergent
+profile until you confirm. Start a new Codex task afterward to load the
+profiles. Plugin installation itself makes no configuration changes and uses
+no hook. After setup, routing is detected automatically; you do not need to
+name the plugin in each request.
+
+## Install without the plugin
 
 Clone the repository into a directory you want to use as a Codex project:
 
@@ -90,10 +137,17 @@ For configuration, `~/.codex/config.toml` provides user-level values. Each `.cod
 Requires Python 3.11 or newer. From this repository, run:
 
 ```text
-python install.py [path/to/your/project]
+python install.py --global
 ```
 
-The current directory is used when the path is omitted. Use `--dry-run` to preview every change. The installer preserves existing instructions and configuration values, backs up modified files under `.codexskills-backup/`, and warns instead of overwriting divergent agent or skill files.
+The global layout is `AGENTS.md`, `config.toml`, `agents/`, and `skills/`
+directly under `CODEX_HOME` (or `~/.codex` if unset). Use `--dry-run` to
+preview every change. The installer preserves existing instructions and
+configuration values, backs up modified files under
+`CODEX_HOME/.codexskills-backup/`, and warns instead of overwriting divergent
+agent or skill files. For an explicit project installation, run
+`python install.py path/to/your/project`; omitting the path retains the
+current-directory project behavior.
 
 After installation, review any warnings and the model names, approval policy, sandbox mode, and concurrency limit for your environment. Trust the project when Codex asks, then start a new Codex task from that repository so the instruction chain is rebuilt. Project-scoped `.codex/config.toml` is loaded only for trusted projects.
 

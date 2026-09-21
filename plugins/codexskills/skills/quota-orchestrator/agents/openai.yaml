@@ -1,0 +1,7 @@
+interface:
+  display_name: "Quota Orchestrator"
+  short_description: "Automatic routing after required setup"
+  default_prompt: "Use $quota-orchestrator to check setup and route this task before executing it."
+
+policy:
+  allow_implicit_invocation: true

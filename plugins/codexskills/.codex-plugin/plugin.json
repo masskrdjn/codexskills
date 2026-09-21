@@ -1,0 +1,31 @@
+{
+  "name": "codexskills",
+  "version": "0.2.2+codex.20260921205622",
+  "description": "Selective multi-model routing for Codex. Required after installation: configure the five global profiles.",
+  "author": {
+    "name": "masskrdjn",
+    "url": "https://github.com/masskrdjn"
+  },
+  "homepage": "https://github.com/masskrdjn/codexskills",
+  "repository": "https://github.com/masskrdjn/codexskills",
+  "keywords": [
+    "codex",
+    "routing",
+    "subagents",
+    "cost-optimization"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Codex Quota Orchestrator",
+    "shortDescription": "Install, then configure five routing profiles.",
+    "longDescription": "Required first step after plugin installation: run the guided global setup. It installs the scout, researcher, runner, builder, and architect profiles in CODEX_HOME; automatic full routing starts in a new Codex task afterward.",
+    "developerName": "masskrdjn",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Instructions",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/masskrdjn/codexskills",
+    "defaultPrompt": "Configure the full codexskills routing profiles globally in CODEX_HOME now."
+  }
+}

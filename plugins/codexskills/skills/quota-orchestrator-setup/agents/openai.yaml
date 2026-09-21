@@ -1,0 +1,7 @@
+interface:
+  display_name: "Configure Routing Profiles"
+  short_description: "Required one-time project setup"
+  default_prompt: "Use $quota-orchestrator-setup to configure the full codexskills routing profiles in this project now."
+
+policy:
+  allow_implicit_invocation: true

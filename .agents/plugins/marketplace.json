@@ -1,0 +1,20 @@
+{
+  "name": "codexskills",
+  "interface": {
+    "displayName": "Codexskills"
+  },
+  "plugins": [
+    {
+      "name": "codexskills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/codexskills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
