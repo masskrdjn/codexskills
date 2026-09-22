@@ -1,7 +1,7 @@
-name = "researcher"
-description = "Recherche documentaire externe comportant plusieurs questions ou sources. La racine peut traiter directement une consultation ponctuelle."
+name = "researcher_complex"
+description = "Recherche complexe en lecture seule : synthèse de sources contradictoires pour une décision technique importante."
 
-model = "gpt-6-luna"
+model = "gpt-6-sol"
 model_reasoning_effort = "max"
 sandbox_mode = "read-only"
 
@@ -15,6 +15,9 @@ résultat ; ne transforme pas une hypothèse en fait. Adapte la longueur au beso
 
 Tu rassembles les sources nécessaires à la question externe. Distingue ce que
 les sources établissent de leur interprétation ; remonte les arbitrages de fond.
+Ta mission porte sur des sources contradictoires utiles à une décision
+technique importante ; cite les désaccords et leurs conséquences sans trancher
+une préférence métier à la place de la racine.
 
 Méthode :
 - cite tes sources avec les URL

@@ -19,15 +19,20 @@ in the user's language.
 
    `python <plugin-root>/scripts/install.py --global --dry-run`
 
-3. Briefly present creations, merges, preserved files, and warnings.
-4. If the user explicitly asked to install, configure, or update and the dry
-   run reports no conflict, proceed without another confirmation:
+   When the user explicitly requests migration to the new GPT-6 default,
+   append `--upgrade-default-model` to this dry run and to the apply command.
+   The flag changes only `agents.default_subagent_model` when its current value
+   is exactly `gpt-5.6-luna`; other configuration remains intact.
+
+3. Briefly present creations, upgrades, merges, preserved files, and warnings.
+4. If the user explicitly asked to install, configure, or update, proceed with
+   the safe actions shown by the dry run without another confirmation:
 
    `python <plugin-root>/scripts/install.py --global`
 
-5. If a divergent file or warning is reported, apply nothing until the user
-   confirms the proposed handling.
-6. Report created or merged files and every backup location. Then prominently
+5. Keep divergent files unchanged and report precisely which ones need manual
+   adaptation. Never overwrite them to silence a warning.
+6. Report created, upgraded, or merged files and every backup location. Then prominently
    ask the user to open a new Codex task so instructions and profiles reload.
 
 ## Guarantees
@@ -39,7 +44,8 @@ in the user's language.
   `python <plugin-root>/scripts/install.py <project-root>` outside this
   plugin setup workflow.
 - Never bypass a symlink or junction refusal.
-- Never overwrite a divergent profile.
+- Upgrade only an exact match to a previously distributed profile, with a
+  backup. Never overwrite a customized or unknown profile.
 - Do not edit `AGENTS.md`, `.codex/config.toml`, or profiles directly when the
   installer can perform the controlled merge.
 - Do not use an installation hook or run setup without an explicit user

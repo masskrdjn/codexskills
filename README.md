@@ -16,14 +16,18 @@ Small, bounded tasks stay with the primary agent. Delegation is used when a clea
 
 | Role | Model | Effort | Responsibility |
 | --- | --- | --- | --- |
-| Primary | `gpt-5.6-sol` | `medium` | Triage, decisions, integration, and small local tasks |
-| `scout` | `gpt-5.6-luna` | `high` | Read-only codebase and log exploration |
-| `researcher` | `gpt-5.6-luna` | `max` | Multi-source external research |
-| `runner` | `gpt-5.6-luna` | `medium` | Long validations and large mechanical batches |
-| `builder` | `gpt-5.6-terra` | `medium` | Scoped implementation with targeted validation |
+| Primary | User-selected | Variable | Triage, decisions, integration, and small local tasks |
+| `scout` | `gpt-6-luna` | `high` | Read-only codebase and log exploration |
+| `scout_complex` (optional) | `gpt-6-sol` | `high` | Resolve contradictory evidence across components |
+| `researcher` | `gpt-6-luna` | `max` | Multi-source external research |
+| `researcher_complex` (optional) | `gpt-6-sol` | `max` | Synthesize conflicting sources for an important technical decision |
+| `runner` | `gpt-6-luna` | `medium` | Long validations and large mechanical batches |
+| `builder` | `gpt-6-sol` | `medium` | Scoped implementation with targeted validation |
 | `architect` | `gpt-6-astra` | `low` | Rare, bounded architecture decisions only |
 
-The default subagent is Luna at `max` effort. Concurrency is capped at four spawned threads per session.
+The default subagent is GPT-6 Luna at `max` effort. Concurrency is capped at four spawned threads per session. Choose the optional Sol profiles at triage only for the complexity described above; small local tasks stay with the primary agent. The five original profiles remain required; the two Sol variants are optional.
+
+At Standard [API prices](https://developers.openai.com/api/docs/models/gpt-6-luna), GPT-6 Luna costs $0.10 input / $0.50 output per million tokens versus $0.20 / $1.20 for GPT-5.6 Luna. [GPT-6 Sol](https://developers.openai.com/api/docs/models/gpt-6-sol) costs $2 / $10 versus $2 / $12 for GPT-5.6 Terra. Sol costs 20 times Luna per input or output token, so use it for a concrete quality need. [Codex credits](https://learn.chatgpt.com/docs/pricing) are a separate accounting unit, not API dollars. These model choices have not yet demonstrated savings on this project's tasks.
 
 ## Project layout
 
@@ -45,8 +49,10 @@ The default subagent is Luna at `max` effort. Concurrency is capped at four spaw
         ├── architect.toml
         ├── builder.toml
         ├── researcher.toml
+        ├── researcher_complex.toml
         ├── runner.toml
-        └── scout.toml
+        ├── scout.toml
+        └── scout_complex.toml
 ```
 
 - `AGENTS.md` defines the repository-wide routing and safety rules.
@@ -142,12 +148,14 @@ python install.py --global
 
 The global layout is `AGENTS.md`, `config.toml`, `agents/`, and `skills/`
 directly under `CODEX_HOME` (or `~/.codex` if unset). Use `--dry-run` to
-preview every change. The installer preserves existing instructions and
-configuration values, backs up modified files under
-`CODEX_HOME/.codexskills-backup/`, and warns instead of overwriting divergent
-agent or skill files. For an explicit project installation, run
+preview every change. The installer upgrades exact matches to previously
+distributed files, backs up modified files under
+`CODEX_HOME/.codexskills-backup/`, and preserves customized files and
+configuration values with warnings. For an explicit project installation, run
 `python install.py path/to/your/project`; omitting the path retains the
 current-directory project behavior.
+To migrate an existing generic subagent default from GPT-5.6 Luna to GPT-6
+Luna, pass `--upgrade-default-model` to both the dry run and install command.
 
 After installation, review any warnings and the model names, approval policy, sandbox mode, and concurrency limit for your environment. Trust the project when Codex asks, then start a new Codex task from that repository so the instruction chain is rebuilt. Project-scoped `.codex/config.toml` is loaded only for trusted projects.
 

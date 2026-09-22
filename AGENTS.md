@@ -34,6 +34,14 @@ pertinents ; elle ne commence pas l'enquête. Avant le lancement, elle nomme la
 question confiée, le travail qu'elle n'effectuera pas et la preuve qui arrêtera
 le scout, puis vérifie son identifiant actif et l'attend.
 
+Les variantes facultatives `scout_complex` et `researcher_complex` emploient
+GPT-6 Sol. Choisir la première dès le triage si l'enquête doit départager des
+preuves contradictoires entre plusieurs composants ; choisir la seconde si
+des sources contradictoires conditionnent une décision technique importante.
+Sinon, utiliser les profils ordinaires GPT-6 Luna. Sans variante disponible,
+garder l'arbitrage complexe à la racine. Ces critères ne promeuvent pas une
+petite tâche locale vers un sous-agent.
+
 Une délégation économique doit remplacer du travail racine, pas seulement
 ajouter un exécutant moins coûteux. La ligne de triage nomme le livrable
 exclusif de l'enfant, le travail abandonné par la racine, la condition d'arrêt

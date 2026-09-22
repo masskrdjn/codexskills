@@ -1,7 +1,7 @@
 name = "scout"
 description = "Exploration étendue ou indépendante en lecture seule : fichiers, appelants, flux et logs. Les lectures locales bornées peuvent rester à la racine."
 
-model = "gpt-5.6-luna"
+model = "gpt-6-luna"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 

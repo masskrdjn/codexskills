@@ -16,14 +16,18 @@ Les petites tâches bornées restent à l’agent principal. La délégation est
 
 | Rôle | Modèle | Effort | Responsabilité |
 | --- | --- | --- | --- |
-| Principal | `gpt-5.6-sol` | `medium` | Triage, décisions, intégration et petites tâches locales |
-| `scout` | `gpt-5.6-luna` | `high` | Exploration en lecture seule du code et des journaux |
-| `researcher` | `gpt-5.6-luna` | `max` | Recherche externe à plusieurs sources |
-| `runner` | `gpt-5.6-luna` | `medium` | Validations longues et lots mécaniques conséquents |
-| `builder` | `gpt-5.6-terra` | `medium` | Implémentation bornée avec validation ciblée |
+| Principal | Choisi par l'utilisateur | Variable | Triage, décisions, intégration et petites tâches locales |
+| `scout` | `gpt-6-luna` | `high` | Exploration en lecture seule du code et des journaux |
+| `scout_complex` (facultatif) | `gpt-6-sol` | `high` | Départager des preuves contradictoires entre composants |
+| `researcher` | `gpt-6-luna` | `max` | Recherche externe à plusieurs sources |
+| `researcher_complex` (facultatif) | `gpt-6-sol` | `max` | Synthétiser des sources contradictoires pour une décision technique importante |
+| `runner` | `gpt-6-luna` | `medium` | Validations longues et lots mécaniques conséquents |
+| `builder` | `gpt-6-sol` | `medium` | Implémentation bornée avec validation ciblée |
 | `architect` | `gpt-6-astra` | `low` | Rares décisions d’architecture, strictement cadrées |
 
-Le sous-agent par défaut est Luna avec un effort `max`. Le nombre de threads enfants simultanés est limité à quatre par session.
+Le sous-agent par défaut est GPT-6 Luna avec un effort `max`. Le nombre de threads enfants simultanés est limité à quatre par session. Les variantes Sol sont choisies dès le triage selon les critères ci-dessus ; les petites tâches locales restent à l'agent principal.
+
+Aux [tarifs API Standard](https://developers.openai.com/api/docs/models/gpt-6-luna), GPT-6 Luna coûte 0,10 $ en entrée / 0,50 $ en sortie par million de tokens, contre 0,20 $ / 1,20 $ pour GPT-5.6 Luna. [GPT-6 Sol](https://developers.openai.com/api/docs/models/gpt-6-sol) coûte 2 $ / 10 $, contre 2 $ / 12 $ pour GPT-5.6 Terra. Sol coûte vingt fois Luna par token en entrée ou sortie : son choix demande un besoin de qualité identifiable. Les [crédits Codex](https://learn.chatgpt.com/docs/pricing) constituent une unité distincte des dollars API. Aucun gain sur les tâches de ce projet n'est encore démontré. Les cinq profils initiaux restent obligatoires ; les deux variantes Sol sont facultatives.
 
 ## Structure du projet
 
@@ -45,8 +49,10 @@ Le sous-agent par défaut est Luna avec un effort `max`. Le nombre de threads en
         ├── architect.toml
         ├── builder.toml
         ├── researcher.toml
+        ├── researcher_complex.toml
         ├── runner.toml
-        └── scout.toml
+        ├── scout.toml
+        └── scout_complex.toml
 ```
 
 - `AGENTS.md` définit les règles de routage et de sécurité du dépôt.
@@ -143,12 +149,16 @@ python install.py --global
 
 La structure globale est `AGENTS.md`, `config.toml`, `agents/` et `skills/`
 directement sous `CODEX_HOME` (ou `~/.codex` s'il est absent). Utilisez
-`--dry-run` pour prévisualiser chaque changement. L’installateur préserve les
-instructions et valeurs existantes, sauvegarde les fichiers modifiés sous
-`CODEX_HOME/.codexskills-backup/` et avertit au lieu d’écraser les fichiers
-d’agent ou de skill divergents. Pour une installation projet explicite,
+`--dry-run` pour prévisualiser chaque changement. L’installateur met à niveau
+les fichiers identiques à une version distribuée auparavant, sauvegarde les
+fichiers modifiés sous `CODEX_HOME/.codexskills-backup/` et préserve avec
+avertissement les fichiers personnalisés et les valeurs de configuration.
+Pour une installation projet explicite,
 exécutez `python install.py chemin/vers/votre/projet` ; sans chemin, le
 comportement historique utilise le répertoire courant.
+Pour migrer la valeur par défaut du sous-agent générique de GPT-5.6 Luna vers
+GPT-6 Luna, ajoutez `--upgrade-default-model` à la prévisualisation et à
+l'installation.
 
 Après l’installation, vérifiez les éventuels avertissements ainsi que les noms de modèles, la politique d’approbation, le mode du bac à sable et la limite de concurrence pour votre environnement. Accordez votre confiance au projet lorsque Codex le demande, puis démarrez une nouvelle tâche Codex depuis ce dépôt afin de reconstruire la chaîne d’instructions. Le fichier `.codex/config.toml` du projet n’est chargé que pour les projets approuvés.
 

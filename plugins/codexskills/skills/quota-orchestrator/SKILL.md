@@ -87,6 +87,12 @@ conclude, interrupt the child instead of duplicating the work.
 Use the installed `scout`, `researcher`, `runner`, `builder`, and `architect`
 profiles. `quota-orchestrator-setup` installs them in the current project with
 their complete models, efforts, permissions, and contracts.
+The optional `scout_complex` and `researcher_complex` profiles use GPT-6 Sol.
+Choose `scout_complex` at triage when contradictory evidence across components
+must be resolved; choose `researcher_complex` when contradictory sources affect
+an important technical decision. Ordinary missions use GPT-6 Luna. If an
+optional profile is unavailable, keep the complex judgment at the root.
+These choices are provisional: GPT-5.6 measurements do not prove GPT-6 savings.
 
 If the user explicitly postpones setup, the reduced fallbacks below may be used
 for an immediate task. Include the relevant contract directly in the child
@@ -99,13 +105,13 @@ flow, localized cause, paths, and lines. Modify nothing. Stop after three
 unsuccessful searches. Report “not found” with what was eliminated instead of
 expanding without bound.
 
-### Researcher — `researcher`, reduced fallback `default`, Luna `max`
+### Researcher — `researcher`, reduced fallback `default`, GPT-6 Luna `max`
 
 External research only. Cite URLs, dates, and versions; separate facts from
 interpretations; flag contradictions. Five queries maximum. Modify no files
 and delegate to nobody.
 
-### Runner — `runner`, reduced fallback `default`, Luna `medium`
+### Runner — `runner`, reduced fallback `default`, GPT-6 Luna `medium`
 
 Run an already defined validation and report the command, exit code, tested
 files, and essential error. Fix only an obvious local mistake. At most three
