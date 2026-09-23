@@ -31,6 +31,11 @@ LEGACY_SHA256 = {
     ".codex/agents/architect.toml": "83a6ab62026f719599de86c4f81e5845108439d1654700ddf4005dce28442b33",
     ".agents/skills/quota-orchestrator/SKILL.md": "4a9bbfb7e6d5fe020ed82011880ae88711ca456f5d81cb7097358621057981cd",
 }
+# Exact GPT-6 files distributed in 0.4.0, before the Luna builder update.
+PREVIOUS_SHA256 = {
+    ".codex/agents/builder.toml": "88be0cb3fbe1b2427b5e94e2869ee5fecfa48719a45530786939ffb158fd1250",
+    ".agents/skills/quota-orchestrator/SKILL.md": "a7fd75994b7076bf9c982a25579c104d11e7456db42e4d02889574d06832c790",
+}
 LEGACY_AGENTS_BLOCK_SHA256 = "cead871fee8a8ae0179552d16770ab0344d7869de9d24c3fdbc58ef1cf4c86e5"
 CONFIG_KEYS = {
     (): ("approval_policy", "sandbox_mode"),
@@ -58,7 +63,8 @@ class Action:
 
 
 def _is_legacy(path: str, content: bytes) -> bool:
-    return hashlib.sha256(content.replace(b"\r\n", b"\n")).hexdigest() == LEGACY_SHA256.get(path)
+    digest = hashlib.sha256(content.replace(b"\r\n", b"\n")).hexdigest()
+    return digest in (LEGACY_SHA256.get(path), PREVIOUS_SHA256.get(path))
 
 
 def _decode(data: bytes, path: Path) -> tuple[str, bool]:

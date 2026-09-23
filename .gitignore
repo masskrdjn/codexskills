@@ -1,3 +1,10 @@
 /rapport.md
 /tests-archive
 /__pycache__
+compare_measurements.py
+test_compare_measurements.py
+extract_model_jsonl.ps1
+test_extract_model_jsonl.py
+test_install.py
+test_plugin.py
+run_observability_tests.py

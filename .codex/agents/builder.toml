@@ -1,10 +1,8 @@
 name = "builder"
 description = "Implémentation substantielle ou indépendante dont la délégation amortit la coordination. Les modifications locales bornées restent à la racine."
 
-model = "gpt-6-sol"
-model_reasoning_effort = "medium"
-# `high` ou `xhigh` restent possibles pour une tâche exceptionnellement difficile, mais
-# c'est une décision explicite de l'orchestrateur, jamais le défaut.
+model = "gpt-6-luna"
+model_reasoning_effort = "max"
 sandbox_mode = "workspace-write"
 
 developer_instructions = """

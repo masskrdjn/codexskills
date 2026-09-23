@@ -148,24 +148,25 @@ est déclarée comme telle : ne pas présenter son rapport comme l'ayant fondée
 | `researcher` | `gpt-6-luna` | `max` |
 | `researcher_complex` (facultatif) | `gpt-6-sol` | `max` |
 | `runner` | `gpt-6-luna` | `medium` |
-| `builder` | `gpt-6-sol` | `medium` |
+| `builder` | `gpt-6-luna` | `max` |
 | Racine | Modèle et effort choisis par l'utilisateur | Variables |
 | `architect` | `gpt-6-astra` | `low` |
 
-Les niveaux d'effort du tableau sont conservés provisoirement. Les mesures
-faites avec GPT-5.6 ne permettent pas de prévoir la qualité, le nombre de
-tokens ni le coût total d'une tâche avec GPT-6 ; il faut les mesurer à nouveau.
+Ces choix restent provisoires : les anciennes mesures ne permettent pas de
+prévoir la qualité, le nombre de tokens ni le coût total avec GPT-6 ; il faut
+les mesurer à nouveau.
 `scout_complex` est choisi dès le triage si l'enquête doit départager des
-preuves contradictoires entre
-plusieurs composants. `researcher_complex` est choisi dès le triage si des
-sources contradictoires doivent être synthétisées pour une décision technique
-importante. Les deux profils Sol sont facultatifs : sans eux, garder l'arbitrage
-à la racine plutôt que présenter Luna comme équivalent. Sol coûte vingt fois
+preuves contradictoires entre plusieurs composants. `researcher_complex` est
+choisi dès le triage si des sources contradictoires doivent être synthétisées
+pour une décision technique importante. Les deux profils Sol sont facultatifs :
+sans eux, garder l'arbitrage à la racine plutôt que présenter Luna comme
+équivalent. Sol coûte vingt fois
 Luna par token API en entrée et sortie aux tarifs Standard du 22 septembre
 2026 ; ce surcoût exige un besoin de qualité identifiable. Les crédits Codex
-ne sont pas des dollars API. `runner` et `builder` utilisent `medium` lorsque
-leur délégation est amortie ; les ambiguïtés restent à la racine. Les fichiers
-TOML fixent modèle et effort ; les permissions effectives restent soumises au
+ne sont pas des dollars API. `runner` utilise `medium` et `builder` utilise
+Luna `max` pour les implémentations au contrat explicite ; les ambiguïtés
+restent à la racine. Les fichiers TOML fixent modèle et effort ; les
+permissions effectives restent soumises au
 runtime parent, comme précisé dans AGENTS.md. Un générique n'est utilisé que
 si aucun rôle ne convient ; son défaut reste Luna/max. Un sous-agent Astra
 passe par `architect`.

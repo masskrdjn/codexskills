@@ -92,7 +92,7 @@ Choose `scout_complex` at triage when contradictory evidence across components
 must be resolved; choose `researcher_complex` when contradictory sources affect
 an important technical decision. Ordinary missions use GPT-6 Luna. If an
 optional profile is unavailable, keep the complex judgment at the root.
-These choices are provisional: GPT-5.6 measurements do not prove GPT-6 savings.
+These choices are provisional: earlier model measurements do not prove savings with GPT-6. The builder uses GPT-6 Luna at `max` for scoped implementations with an explicit contract; broader decisions stay with the primary agent.
 
 If the user explicitly postpones setup, the reduced fallbacks below may be used
 for an immediate task. Include the relevant contract directly in the child

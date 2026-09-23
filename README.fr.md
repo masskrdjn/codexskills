@@ -22,12 +22,12 @@ Les petites tâches bornées restent à l’agent principal. La délégation est
 | `researcher` | `gpt-6-luna` | `max` | Recherche externe à plusieurs sources |
 | `researcher_complex` (facultatif) | `gpt-6-sol` | `max` | Synthétiser des sources contradictoires pour une décision technique importante |
 | `runner` | `gpt-6-luna` | `medium` | Validations longues et lots mécaniques conséquents |
-| `builder` | `gpt-6-sol` | `medium` | Implémentation bornée avec validation ciblée |
+| `builder` | `gpt-6-luna` | `max` | Implémentation bornée avec validation ciblée |
 | `architect` | `gpt-6-astra` | `low` | Rares décisions d’architecture, strictement cadrées |
 
 Le sous-agent par défaut est GPT-6 Luna avec un effort `max`. Le nombre de threads enfants simultanés est limité à quatre par session. Les variantes Sol sont choisies dès le triage selon les critères ci-dessus ; les petites tâches locales restent à l'agent principal.
 
-Aux [tarifs API Standard](https://developers.openai.com/api/docs/models/gpt-6-luna), GPT-6 Luna coûte 0,10 $ en entrée / 0,50 $ en sortie par million de tokens, contre 0,20 $ / 1,20 $ pour GPT-5.6 Luna. [GPT-6 Sol](https://developers.openai.com/api/docs/models/gpt-6-sol) coûte 2 $ / 10 $, contre 2 $ / 12 $ pour GPT-5.6 Terra. Sol coûte vingt fois Luna par token en entrée ou sortie : son choix demande un besoin de qualité identifiable. Les [crédits Codex](https://learn.chatgpt.com/docs/pricing) constituent une unité distincte des dollars API. Aucun gain sur les tâches de ce projet n'est encore démontré. Les cinq profils initiaux restent obligatoires ; les deux variantes Sol sont facultatives.
+Aux [tarifs API Standard](https://developers.openai.com/api/docs/models/gpt-6-luna), GPT-6 Luna coûte 0,10 $ en entrée / 0,50 $ en sortie par million de tokens. [GPT-6 Sol](https://developers.openai.com/api/docs/models/gpt-6-sol) coûte 2 $ / 10 $. Sol coûte vingt fois Luna par token en entrée ou sortie : son choix demande un besoin de qualité identifiable. Le builder utilise Luna avec un effort `max` pour les tâches clairement spécifiées ; les décisions d'implémentation complexes restent à la racine. Les [crédits Codex](https://learn.chatgpt.com/docs/pricing) constituent une unité distincte des dollars API. Aucun gain sur les tâches de ce projet n'est encore démontré. Les cinq profils initiaux restent obligatoires ; les deux variantes Sol sont facultatives.
 
 ## Structure du projet
 
