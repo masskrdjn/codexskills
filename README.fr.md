@@ -22,12 +22,13 @@ Les petites tâches bornées restent à l’agent principal. La délégation est
 | `researcher` | `gpt-6-luna` | `max` | Recherche externe à plusieurs sources |
 | `researcher_complex` (facultatif) | `gpt-6-sol` | `max` | Synthétiser des sources contradictoires pour une décision technique importante |
 | `runner` | `gpt-6-luna` | `medium` | Validations longues et lots mécaniques conséquents |
-| `builder` | `gpt-6-luna` | `max` | Implémentation bornée avec validation ciblée |
+| `builder` | `gpt-6-sol` | `high` | Implémentation substantielle avec validation ciblée |
+| `strategist` | `gpt-5.6-sol` | `medium` | Cadrage complexe, décomposition et arbitrages intermédiaires |
 | `architect` | `gpt-6-astra` | `low` | Rares décisions d’architecture, strictement cadrées |
 
-Le sous-agent par défaut est GPT-6 Luna avec un effort `max`. Le nombre de threads enfants simultanés est limité à quatre par session. Les variantes Sol sont choisies dès le triage selon les critères ci-dessus ; les petites tâches locales restent à l'agent principal.
+Le sous-agent générique par défaut reste GPT-6 Luna avec un effort `max`. Le nombre de threads enfants simultanés est limité à quatre par session. Les rôles Sol nommés sont choisis uniquement pour les responsabilités ci-dessus ; les petites tâches locales restent à l'agent principal.
 
-Aux [tarifs API Standard](https://developers.openai.com/api/docs/models/gpt-6-luna), GPT-6 Luna coûte 0,10 $ en entrée / 0,50 $ en sortie par million de tokens. [GPT-6 Sol](https://developers.openai.com/api/docs/models/gpt-6-sol) coûte 2 $ / 10 $. Sol coûte vingt fois Luna par token en entrée ou sortie : son choix demande un besoin de qualité identifiable. Le builder utilise Luna avec un effort `max` pour les tâches clairement spécifiées ; les décisions d'implémentation complexes restent à la racine. Les [crédits Codex](https://learn.chatgpt.com/docs/pricing) constituent une unité distincte des dollars API. Aucun gain sur les tâches de ce projet n'est encore démontré. Les cinq profils initiaux restent obligatoires ; les deux variantes Sol sont facultatives.
+Aux [tarifs API Standard](https://developers.openai.com/api/docs/models/gpt-6-luna), les modèles et niveaux d'effort ont des coûts unitaires et des consommations différents. Le builder utilise GPT-6 Sol avec un effort `high` pour préserver l'efficience d'implémentation. Le strategist utilise GPT-5.6 Sol avec un effort `medium` afin de cadrer un travail complexe sans interposer Astra. [GPT-6 Astra](https://developers.openai.com/api/docs/models/gpt-6-astra) reste limité aux décisions structurantes. Les [crédits Codex](https://learn.chatgpt.com/docs/pricing) constituent une unité distincte des dollars API. Aucun gain en tokens sur les tâches de ce projet n'est encore démontré : il doit être établi par des runs complets comparables. Les six profils principaux sont obligatoires ; les deux variantes d'enquête Sol restent facultatives.
 
 ## Structure du projet
 
@@ -52,7 +53,8 @@ Aux [tarifs API Standard](https://developers.openai.com/api/docs/models/gpt-6-lu
         ├── researcher_complex.toml
         ├── runner.toml
         ├── scout.toml
-        └── scout_complex.toml
+        ├── scout_complex.toml
+        └── strategist.toml
 ```
 
 - `AGENTS.md` définit les règles de routage et de sécurité du dépôt.
@@ -65,7 +67,7 @@ Aux [tarifs API Standard](https://developers.openai.com/api/docs/models/gpt-6-lu
 ## Installation comme plugin
 
 > [!IMPORTANT]
-> L'installation du plugin ne suffit pas à activer les cinq profils complets.
+> L'installation du plugin ne suffit pas à activer les six profils complets.
 > Une configuration globale unique est requise. Sans elle, le
 > plugin le signalera au début des tâches et ne prétendra pas que le routage
 > complet est actif.
@@ -91,7 +93,7 @@ Configure les profils complets de codexskills.
 ```
 
 Le skill de configuration prévisualise les changements puis installe
-`scout`, `researcher`, `runner`, `builder` et `architect` dans `CODEX_HOME`
+`scout`, `researcher`, `runner`, `builder`, `strategist` et `architect` dans `CODEX_HOME`
 (ou `~/.codex` s'il est absent). Il fusionne les réglages compatibles,
 sauvegarde les fichiers modifiés sous `CODEX_HOME/.codexskills-backup/` et
 s'arrête devant tout avertissement ou profil divergent jusqu'à confirmation.
@@ -169,6 +171,7 @@ Codex détecte les instructions du dépôt dans `AGENTS.md`, les skills locaux d
 - Ne jamais utiliser `--yolo` ni `--dangerously-bypass-approvals-and-sandbox`.
 - Les permissions imposées au parent pendant l’exécution s’appliquent aussi aux agents enfants.
 - Ne pas utiliser `architect` si ces permissions annulent ses restrictions de lecture seule.
+- `strategist` prépare le plan mais ne lance pas lui-même de sous-agents.
 - `architect` n’explore pas, n’exécute aucune commande, ne modifie aucun fichier et ne délègue pas.
 - Les sous-agents restent dans leur rôle et n’effectuent pas eux-mêmes le routage.
 

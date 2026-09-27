@@ -51,7 +51,8 @@ Ne pas compter les opérations pour déclencher une délégation.
 | Implémentation substantielle ou indépendante dont la délégation est amortie | `builder`, validation ciblée comprise |
 | Consultation documentaire ponctuelle | Racine directement |
 | Recherche documentaire à plusieurs questions ou sources | `researcher` |
-| Raisonnement complexe ou intégration | Racine |
+| Cadrage complexe, décomposition ou arbitrage intermédiaire sur contexte assemblé | `strategist` |
+| Intégration finale et décision de routage | Racine |
 | Arbitrage technique difficile, ou décision structurante coûteuse à corriger nécessitant un avis expert | `architect` |
 
 Le routage `researcher` est impératif : créer ce sous-agent avant toute
@@ -148,7 +149,8 @@ est déclarée comme telle : ne pas présenter son rapport comme l'ayant fondée
 | `researcher` | `gpt-6-luna` | `max` |
 | `researcher_complex` (facultatif) | `gpt-6-sol` | `max` |
 | `runner` | `gpt-6-luna` | `medium` |
-| `builder` | `gpt-6-luna` | `max` |
+| `builder` | `gpt-6-sol` | `high` |
+| `strategist` | `gpt-5.6-sol` | `medium` |
 | Racine | Modèle et effort choisis par l'utilisateur | Variables |
 | `architect` | `gpt-6-astra` | `low` |
 
@@ -163,9 +165,10 @@ sans eux, garder l'arbitrage à la racine plutôt que présenter Luna comme
 équivalent. Sol coûte vingt fois
 Luna par token API en entrée et sortie aux tarifs Standard du 22 septembre
 2026 ; ce surcoût exige un besoin de qualité identifiable. Les crédits Codex
-ne sont pas des dollars API. `runner` utilise `medium` et `builder` utilise
-Luna `max` pour les implémentations au contrat explicite ; les ambiguïtés
-restent à la racine. Les fichiers TOML fixent modèle et effort ; les
+ne sont pas des dollars API. `runner` utilise Luna `medium`, `builder` utilise
+GPT-6 Sol `high` pour l'implémentation substantielle, et `strategist` utilise
+GPT-5.6 Sol `medium` pour le cadrage complexe sur contexte déjà assemblé.
+Les fichiers TOML fixent modèle et effort ; les
 permissions effectives restent soumises au
 runtime parent, comme précisé dans AGENTS.md. Un générique n'est utilisé que
 si aucun rôle ne convient ; son défaut reste Luna/max. Un sous-agent Astra
@@ -224,6 +227,21 @@ fois ces éléments obtenus, ne pas rechercher d'autres causes possibles sauf
 contradiction factuelle ou demande explicite. Une mission porte normalement
 sur une seule question causale ; toute extension nécessite un nouveau triage
 par la racine.
+
+## Cadrage Strategist
+
+Le rôle `strategist` intervient uniquement lorsque le contexte utile est déjà
+assemblé mais que le quoi-faire reste trop ambigu pour `builder`. Il prépare
+une décision ou un plan : missions, ordre, dépendances, contrats, critères
+d'acceptation, alternatives et conditions de révision. Il n'explore pas,
+n'exécute rien, n'écrit rien et ne lance aucun agent ; la racine conserve
+l'orchestration effective et l'intégration.
+
+Ne pas rendre ce passage obligatoire. Une implémentation dont le contrat est
+explicite va directement à `builder`. Une mesure ciblée va au rôle approprié
+plutôt qu'à `strategist`. Le strategist ne fait pas de revue après coup et
+n'escalade vers `architect` que si une décision structurante, difficile à
+corriger ou encore contradictoire nécessite réellement Astra.
 
 L'échec est un livrable valide. Garder les bornes des rôles : runner, trois
 cycles correction/test ; environnement, deux tentatives ; scout, trois

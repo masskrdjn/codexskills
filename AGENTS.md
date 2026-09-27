@@ -42,6 +42,17 @@ Sinon, utiliser les profils ordinaires GPT-6 Luna. Sans variante disponible,
 garder l'arbitrage complexe à la racine. Ces critères ne promeuvent pas une
 petite tâche locale vers un sous-agent.
 
+Le rôle `strategist` emploie GPT-5.6 Sol avec un effort `medium`. Il reçoit un
+contexte déjà rassemblé et prépare une décision, un découpage ou un plan
+d'exécution lorsque le quoi-faire reste trop ambigu pour `builder`, sans
+explorer, exécuter, écrire ni déléguer. Son orchestration est logique : la
+racine conserve le lancement des agents, l'intégration et la responsabilité
+finale. Ne pas interposer `strategist` devant une implémentation déjà spécifiée.
+Le rôle `builder` emploie GPT-6 Sol avec un effort `high` pour l'implémentation
+substantielle et sa validation ciblée. `architect` reste le dernier palier en
+GPT-6 Astra `low`, réservé aux décisions structurantes, difficiles à corriger
+ou encore contradictoires après le cadrage ordinaire.
+
 Une délégation économique doit remplacer du travail racine, pas seulement
 ajouter un exécutant moins coûteux. La ligne de triage nomme le livrable
 exclusif de l'enfant, le travail abandonné par la racine, la condition d'arrêt
@@ -111,8 +122,8 @@ Les overrides runtime du parent sont réappliqués aux sous-agents et prévalent
 sur leurs valeurs par défaut. Si les permissions du parent annulent les
 restrictions d'`architect`, ne pas le consulter dans cette session ; isoler la
 décision dans une session aux permissions adaptées.
-Lorsqu'il est lancé comme sous-agent, le rôle `architect` ne fait ni
-exploration, ni commandes, ni écriture, ni délégation.
+Lorsqu'ils sont lancés comme sous-agents, `strategist` et `architect` ne font
+ni exploration, ni commandes, ni écriture, ni délégation.
 Après la réponse, vérifier dans la trace persistante le rôle, le modèle et
 l'effort effectifs. Sans preuve `architect` + `gpt-6-astra` + `low`, écarter le
 résultat comme non conforme et ne jamais annoncer une consultation ou une

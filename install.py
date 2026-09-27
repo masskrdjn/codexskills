@@ -36,7 +36,13 @@ PREVIOUS_SHA256 = {
     ".codex/agents/builder.toml": "88be0cb3fbe1b2427b5e94e2869ee5fecfa48719a45530786939ffb158fd1250",
     ".agents/skills/quota-orchestrator/SKILL.md": "a7fd75994b7076bf9c982a25579c104d11e7456db42e4d02889574d06832c790",
 }
+# Exact files distributed in 0.5.0, before the Sol builder and strategist.
+RELEASE_0_5_SHA256 = {
+    ".codex/agents/builder.toml": "31e154b6a6ee67caab4bc3c25fdb674d073f89c879ec83f64e560e6a09a9c60b",
+    ".agents/skills/quota-orchestrator/SKILL.md": "1bdf0be6aa75e6784ff79bbd924846671e1f9f3df9ace1471ca0a52320c66e12",
+}
 LEGACY_AGENTS_BLOCK_SHA256 = "cead871fee8a8ae0179552d16770ab0344d7869de9d24c3fdbc58ef1cf4c86e5"
+RELEASE_0_5_AGENTS_BLOCK_SHA256 = "290aa11f0c6a6fd45c0a013b85a9bd11b488d1fc4c7412b63c2c64a18a7d0ec9"
 CONFIG_KEYS = {
     (): ("approval_policy", "sandbox_mode"),
     ("features",): ("multi_agent",),
@@ -64,7 +70,11 @@ class Action:
 
 def _is_legacy(path: str, content: bytes) -> bool:
     digest = hashlib.sha256(content.replace(b"\r\n", b"\n")).hexdigest()
-    return digest in (LEGACY_SHA256.get(path), PREVIOUS_SHA256.get(path))
+    return digest in (
+        LEGACY_SHA256.get(path),
+        PREVIOUS_SHA256.get(path),
+        RELEASE_0_5_SHA256.get(path),
+    )
 
 
 def _decode(data: bytes, path: Path) -> tuple[str, bool]:
@@ -222,7 +232,8 @@ def _merge_agents(source: bytes, target: bytes, path: Path) -> tuple[bytes, list
         start = target_text.index(START) + len(START)
         end = target_text.index(END, start)
         old_block = target_text[start:end].strip("\r\n").replace("\r\n", "\n")
-        if hashlib.sha256(old_block.encode("utf-8")).hexdigest() == LEGACY_AGENTS_BLOCK_SHA256:
+        old_digest = hashlib.sha256(old_block.encode("utf-8")).hexdigest()
+        if old_digest in (LEGACY_AGENTS_BLOCK_SHA256, RELEASE_0_5_AGENTS_BLOCK_SHA256):
             merged = target_text[:start] + newline + block + newline + target_text[end:]
             return _encode(merged, bom), []
         return target, [f"{path}: bloc codexskills existant conservé car il diffère de la source"]

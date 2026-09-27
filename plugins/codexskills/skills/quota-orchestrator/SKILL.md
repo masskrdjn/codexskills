@@ -1,6 +1,6 @@
 ---
 name: quota-orchestrator
-description: Apply automatically at the start of every root task to decide whether work stays local or is delegated. Requires the five complete project profiles installed by quota-orchestrator-setup; strongly prompt for setup when they are missing. Never apply inside an already delegated subagent.
+description: Apply automatically at the start of every root task to decide whether work stays local or is delegated. Requires the six complete project profiles installed by quota-orchestrator-setup; strongly prompt for setup when they are missing. Never apply inside an already delegated subagent.
 ---
 
 # Selective multi-model routing
@@ -14,8 +14,8 @@ already delegated subagent. Communicate in the user's language.
 
 ## Required setup gate
 
-Before routing, verify that all five named agent types are available:
-`scout`, `researcher`, `runner`, `builder`, and `architect`.
+Before routing, verify that all six named agent types are available:
+`scout`, `researcher`, `runner`, `builder`, `strategist`, and `architect`.
 
 If any profile is missing:
 
@@ -28,7 +28,7 @@ If any profile is missing:
 4. Keep the current task at the root. Use a reduced built-in fallback only if
    the user explicitly declines or postpones setup. Never emulate `architect`.
 
-Repeat this notice on later root tasks until all five profiles are available.
+Repeat this notice on later root tasks until all six profiles are available.
 After setup, tell the user to start a new Codex task so the profiles are loaded.
 
 ## Objective
@@ -54,6 +54,7 @@ routing decision.
 | External research with multiple questions or sources | `researcher` |
 | Long independent validation | `runner` |
 | Substantial bounded implementation | `builder` |
+| Complex framing, decomposition, or intermediate tradeoff on assembled context | `strategist` |
 | Exceptional conceptual decision | `architect` |
 
 A one-off lookup using one source stays at the root. As soon as a second query,
@@ -84,7 +85,7 @@ conclude, interrupt the child instead of duplicating the work.
 
 ## Complete profiles and reduced fallback
 
-Use the installed `scout`, `researcher`, `runner`, `builder`, and `architect`
+Use the installed `scout`, `researcher`, `runner`, `builder`, `strategist`, and `architect`
 profiles. `quota-orchestrator-setup` installs them in the current project with
 their complete models, efforts, permissions, and contracts.
 The optional `scout_complex` and `researcher_complex` profiles use GPT-6 Sol.
@@ -92,7 +93,7 @@ Choose `scout_complex` at triage when contradictory evidence across components
 must be resolved; choose `researcher_complex` when contradictory sources affect
 an important technical decision. Ordinary missions use GPT-6 Luna. If an
 optional profile is unavailable, keep the complex judgment at the root.
-These choices are provisional: earlier model measurements do not prove savings with GPT-6. The builder uses GPT-6 Luna at `max` for scoped implementations with an explicit contract; broader decisions stay with the primary agent.
+These choices are provisional: earlier model measurements do not prove savings with GPT-6. The builder uses GPT-6 Sol at `high` for substantial scoped implementations. The strategist uses GPT-5.6 Sol at `medium` to frame complex work from already assembled context. Final routing and integration stay with the primary agent.
 
 If the user explicitly postpones setup, the reduced fallbacks below may be used
 for an immediate task. Include the relevant contract directly in the child
@@ -123,6 +124,15 @@ Implement an explicit scope with the smallest defensible change. Do not expand
 architecture, APIs, schemas, or dependencies without authorization. Validate
 the change narrowly. Stop after three attempts and report the decision or
 failure.
+
+### Strategist — `strategist`, no fallback
+
+Read only and context bound. Turn already assembled evidence into a decision,
+decomposition, execution order, role assignments, contracts, and acceptance
+criteria. Do not explore, execute commands, write files, or spawn agents. The
+primary agent performs the actual orchestration. Do not insert this role before
+an implementation whose contract is already explicit, and do not escalate to
+Astra when a targeted measurement can settle the question.
 
 ### Architect — `architect`, no fallback
 

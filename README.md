@@ -22,12 +22,13 @@ Small, bounded tasks stay with the primary agent. Delegation is used when a clea
 | `researcher` | `gpt-6-luna` | `max` | Multi-source external research |
 | `researcher_complex` (optional) | `gpt-6-sol` | `max` | Synthesize conflicting sources for an important technical decision |
 | `runner` | `gpt-6-luna` | `medium` | Long validations and large mechanical batches |
-| `builder` | `gpt-6-luna` | `max` | Scoped implementation with targeted validation |
+| `builder` | `gpt-6-sol` | `high` | Substantial implementation with targeted validation |
+| `strategist` | `gpt-5.6-sol` | `medium` | Complex framing, decomposition, and intermediate tradeoffs |
 | `architect` | `gpt-6-astra` | `low` | Rare, bounded architecture decisions only |
 
-The default subagent is GPT-6 Luna at `max` effort. Concurrency is capped at four spawned threads per session. Choose the optional Sol profiles at triage only for the complexity described above; small local tasks stay with the primary agent. The five original profiles remain required; the two Sol variants are optional.
+The default generic subagent remains GPT-6 Luna at `max` effort. Concurrency is capped at four spawned threads per session. Named Sol roles are selected only for the responsibilities above; small local tasks stay with the primary agent. The six primary profiles are required; the two Sol investigation variants are optional.
 
-At Standard [API prices](https://developers.openai.com/api/docs/models/gpt-6-luna), GPT-6 Luna costs $0.10 input / $0.50 output per million tokens. [GPT-6 Sol](https://developers.openai.com/api/docs/models/gpt-6-sol) costs $2 / $10. Sol costs 20 times Luna per input or output token, so use it for a concrete quality need. The builder uses Luna at `max` for clearly specified work; complex implementation decisions remain with the primary agent. [Codex credits](https://learn.chatgpt.com/docs/pricing) are a separate accounting unit, not API dollars. These model choices have not yet demonstrated savings on this project's tasks.
+At Standard [API prices](https://developers.openai.com/api/docs/models/gpt-6-luna), models and reasoning levels have different unit costs and token consumption. The builder uses GPT-6 Sol at `high` to preserve implementation efficiency. The strategist uses GPT-5.6 Sol at `medium` to frame complex work without inserting Astra. [GPT-6 Astra](https://developers.openai.com/api/docs/models/gpt-6-astra) remains limited to structural decisions. [Codex credits](https://learn.chatgpt.com/docs/pricing) are a separate accounting unit, not API dollars. Token savings on this project's tasks have not yet been demonstrated and require comparable complete runs. The six primary profiles are required; the two Sol investigation variants remain optional.
 
 ## Project layout
 
@@ -52,7 +53,8 @@ At Standard [API prices](https://developers.openai.com/api/docs/models/gpt-6-lun
         ├── researcher_complex.toml
         ├── runner.toml
         ├── scout.toml
-        └── scout_complex.toml
+        ├── scout_complex.toml
+        └── strategist.toml
 ```
 
 - `AGENTS.md` defines the repository-wide routing and safety rules.
@@ -65,7 +67,7 @@ At Standard [API prices](https://developers.openai.com/api/docs/models/gpt-6-lun
 ## Install as a plugin
 
 > [!IMPORTANT]
-> Installing the plugin alone does not activate the five complete profiles.
+> Installing the plugin alone does not activate the six complete profiles.
 > One-time global setup is required. Until it is complete, the plugin
 > will say so at the start of tasks and will not claim that full routing is
 > active.
@@ -91,7 +93,7 @@ Configure the full codexskills profiles.
 ```
 
 The setup skill previews the changes, then installs `scout`, `researcher`,
-`runner`, `builder`, and `architect` in `CODEX_HOME` (or `~/.codex` when it is
+`runner`, `builder`, `strategist`, and `architect` in `CODEX_HOME` (or `~/.codex` when it is
 unset). It merges compatible settings, backs up modified files under
 `CODEX_HOME/.codexskills-backup/`, and stops on any warning or divergent
 profile until you confirm. Start a new Codex task afterward to load the
@@ -166,6 +168,7 @@ Codex discovers repository instructions from `AGENTS.md`, local skills from `.ag
 - Never run with `--yolo` or `--dangerously-bypass-approvals-and-sandbox`.
 - Parent runtime permission overrides also apply to spawned agents.
 - Do not use `architect` when those overrides would defeat its read-only restrictions.
+- `strategist` prepares the plan but never spawns subagents itself.
 - `architect` does not explore, execute commands, edit files, or delegate.
 - Subagents stay within their assigned role and do not perform routing themselves.
 

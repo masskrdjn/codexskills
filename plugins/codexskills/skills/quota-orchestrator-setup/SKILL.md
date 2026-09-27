@@ -1,6 +1,6 @@
 ---
 name: quota-orchestrator-setup
-description: Required one-time setup after installing codexskills. Install or update the complete scout, researcher, runner, builder, and architect Codex profiles globally. Use when the user asks to configure, install, update, or preview full routing, in English or French.
+description: Required one-time setup after installing codexskills. Install or update the complete scout, researcher, runner, builder, strategist, and architect Codex profiles globally. Use when the user asks to configure, install, update, or preview full routing, in English or French.
 ---
 
 # Configure the complete profiles

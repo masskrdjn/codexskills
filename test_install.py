@@ -1,6 +1,7 @@
 """Run with: python test_install.py"""
 
 import importlib.util
+import hashlib
 import subprocess
 import sys
 import tempfile
@@ -13,13 +14,30 @@ SCRIPT = ROOT / "install.py"
 EXPECTED = [
     Path("AGENTS.md"),
     Path(".codex/config.toml"),
-    *(Path(".codex/agents") / name for name in ("architect.toml", "builder.toml", "researcher.toml", "runner.toml", "scout.toml")),
+    *(Path(".codex/agents") / name for name in ("architect.toml", "builder.toml", "researcher.toml", "researcher_complex.toml", "runner.toml", "scout.toml", "scout_complex.toml", "strategist.toml")),
     Path(".agents/skills/quota-orchestrator/SKILL.md"),
+]
+GLOBAL_EXPECTED = [
+    Path("AGENTS.md"),
+    Path("config.toml"),
+    *(Path("agents") / name for name in ("architect.toml", "builder.toml", "researcher.toml", "researcher_complex.toml", "runner.toml", "scout.toml", "scout_complex.toml", "strategist.toml")),
+    Path("skills/quota-orchestrator/SKILL.md"),
 ]
 
 
 def run(target, *args, success=True):
     result = subprocess.run([sys.executable, str(SCRIPT), *args, str(target)], capture_output=True, text=True)
+    assert (result.returncode == 0) == success, result.stdout + result.stderr
+    return result
+
+
+def run_global(home, *args, success=True):
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT), "--global", *args],
+        capture_output=True,
+        text=True,
+        env={**__import__("os").environ, "CODEX_HOME": str(home)},
+    )
     assert (result.returncode == 0) == success, result.stdout + result.stderr
     return result
 
@@ -81,6 +99,47 @@ if __name__ == "__main__":
         run(dry, "--dry-run")
         assert snapshot(dry) == {}
 
+        custom_default = base / "custom-default"
+        (custom_default / ".codex").mkdir(parents=True)
+        configured = '# keep this setting\n[agents]\ndefault_subagent_model = "gpt-5.6-luna"\n'
+        config_path = custom_default / ".codex/config.toml"
+        config_path.write_text(configured, encoding="utf-8")
+        preview = run(custom_default, "--dry-run", "--upgrade-default-model")
+        assert ".codex\\config.toml" in preview.stdout
+        assert config_path.read_text(encoding="utf-8") == configured
+        preserved = run(custom_default)
+        assert "default_subagent_model conservé" in preserved.stderr
+        assert 'default_subagent_model = "gpt-5.6-luna"' in config_path.read_text(encoding="utf-8")
+        assert '# keep this setting' in config_path.read_text(encoding="utf-8")
+        run(custom_default, "--upgrade-default-model")
+        assert '# keep this setting' in config_path.read_text(encoding="utf-8")
+        assert 'default_subagent_model = "gpt-6-luna"' in config_path.read_text(encoding="utf-8")
+        assert list((custom_default / ".codexskills-backup").glob("*/.codex/config.toml"))
+
+        global_home = base / "global-home"
+        global_home.mkdir()
+        global_dry = run_global(global_home, "--dry-run")
+        assert "portée: globale" in global_dry.stdout and str(global_home.resolve()) in global_dry.stdout
+        assert snapshot(global_home) == {}
+        run_global(global_home)
+        assert all((global_home / path).is_file() for path in GLOBAL_EXPECTED)
+        assert not (global_home / ".codex").exists() and not (global_home / ".agents").exists()
+        first_global = snapshot(global_home)
+        run_global(global_home)
+        assert snapshot(global_home) == first_global
+        run_global(global_home, str(empty), success=False)
+
+        fallback_home = base / "fallback-home"
+        fallback_codex = fallback_home / ".codex"
+        fallback_codex.mkdir(parents=True)
+        spec = importlib.util.spec_from_file_location("codexskills_installer_fallback", SCRIPT)
+        installer = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = installer
+        spec.loader.exec_module(installer)
+        with patch.dict("os.environ", {"CODEX_HOME": ""}, clear=False), patch.object(Path, "home", return_value=fallback_home), patch.object(sys, "argv", [str(SCRIPT), "--global"]):
+            assert installer.main() == 0
+        assert all((fallback_codex / path).is_file() for path in GLOBAL_EXPECTED)
+
         invalid = base / "invalid"
         (invalid / ".codex").mkdir(parents=True)
         (invalid / ".codex/config.toml").write_text("broken = [", encoding="utf-8")
@@ -102,6 +161,39 @@ if __name__ == "__main__":
         installer = importlib.util.module_from_spec(spec)
         sys.modules[spec.name] = installer
         spec.loader.exec_module(installer)
+        legacy = base / "legacy"
+        (legacy / ".codex/agents").mkdir(parents=True)
+        old_config = b'[agents]\ndefault_subagent_model = "gpt-5.6-luna"\n'
+        old_scout = b'name = "old scout"\n'
+        old_block = "# old managed rule"
+        old_agents = f"# user rule\n{installer.START}\n{old_block}\n{installer.END}\n"
+        (legacy / ".codex/config.toml").write_bytes(old_config)
+        (legacy / ".codex/agents/scout.toml").write_bytes(old_scout)
+        (legacy / ".codex/agents/builder.toml").write_text('name = "custom builder"\n', encoding="utf-8")
+        (legacy / "AGENTS.md").write_text(old_agents, encoding="utf-8")
+        old_hashes = {
+            ".codex/config.toml": hashlib.sha256(old_config).hexdigest(),
+            ".codex/agents/scout.toml": hashlib.sha256(old_scout).hexdigest(),
+        }
+        with patch.dict(installer.LEGACY_SHA256, old_hashes), patch.object(
+            installer, "LEGACY_AGENTS_BLOCK_SHA256", hashlib.sha256(old_block.encode()).hexdigest()
+        ):
+            assert installer._is_legacy(".codex/agents/scout.toml", old_scout.replace(b"\n", b"\r\n"))
+            upgrades, preserved, warnings = installer.plan(legacy)
+            assert {action.path.relative_to(legacy) for action in upgrades} >= {
+                Path("AGENTS.md"), Path(".codex/config.toml"), Path(".codex/agents/scout.toml")
+            }
+            assert "mis à niveau" in {action.status for action in upgrades}
+            assert any("builder.toml" in warning for warning in warnings)
+            backup = installer.apply(legacy, upgrades)
+            assert backup and (backup / "AGENTS.md").read_text(encoding="utf-8") == old_agents
+            assert (backup / ".codex/config.toml").read_bytes() == old_config
+            assert (backup / ".codex/agents/scout.toml").read_bytes() == old_scout
+            assert (legacy / ".codex/agents/builder.toml").read_text(encoding="utf-8") == 'name = "custom builder"\n'
+            assert "# user rule" in (legacy / "AGENTS.md").read_text(encoding="utf-8")
+            assert old_block not in (legacy / "AGENTS.md").read_text(encoding="utf-8")
+            repeated, _, repeated_warnings = installer.plan(legacy)
+            assert not repeated and len(repeated_warnings) == 1
         rollback = base / "rollback"
         rollback.mkdir()
         actions, _, _ = installer.plan(rollback)
@@ -125,4 +217,4 @@ if __name__ == "__main__":
         assert not any((rollback / path).exists() for path in EXPECTED)
         assert list(rollback.iterdir()) == []
 
-    print("PASS: empty install, merge, conflicts, override, idempotence, dry-run, invalid TOML, symlink refusal, rollback.")
+    print("PASS: project/global install, merge, conflicts, override, idempotence, dry-run, invalid TOML, symlink refusal, rollback.")
