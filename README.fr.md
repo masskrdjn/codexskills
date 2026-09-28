@@ -68,6 +68,8 @@ Aux [tarifs API Standard](https://developers.openai.com/api/docs/models/gpt-6-lu
 ## Installation comme plugin
 
 > [!IMPORTANT]
+> Version actuelle du plugin : **0.7.0**.
+>
 > Une marketplace de dépôt approuvée installe le plugin par défaut. Codex
 > demande encore une fois votre confiance pour son hook SessionStart. Ce hook
 > configure ensuite les six profils globaux et les vérifie aux sessions suivantes.
@@ -144,9 +146,12 @@ Si votre projet contient déjà un `AGENTS.md`, **ne le remplacez pas** : conser
 
 Pour la configuration, `~/.codex/config.toml` fournit les valeurs utilisateur. Chaque `.codex/config.toml` du projet approuvé ajoute ses propres valeurs ; à clé identique, la couche de projet la plus proche du répertoire courant l’emporte, tandis que les clés absentes restent héritées. Les options passées en ligne de commande restent prioritaires. Codex ignore les couches `.codex/` locales tant que le projet n’est pas approuvé, et certaines clés sensibles ne peuvent pas être redéfinies au niveau du projet.
 
-### Installation
+### Installation manuelle et récupération
 
-Python 3.11 ou supérieur est requis. Depuis ce dépôt, exécutez :
+Ce parcours sert uniquement à l'installation sans plugin, à la récupération
+après un refus du hook ou au test explicite de l'installateur. L'utilisation
+normale du plugin ne nécessite pas cette commande. Python 3.11 ou supérieur est
+requis :
 
 ```text
 python install.py --global

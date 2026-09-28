@@ -68,6 +68,8 @@ At Standard [API prices](https://developers.openai.com/api/docs/models/gpt-6-lun
 ## Install as a plugin
 
 > [!IMPORTANT]
+> Current plugin version: **0.7.0**.
+>
 > An approved repository marketplace installs the plugin by default. Codex
 > still asks you to trust its bundled SessionStart hook once. That hook then
 > configures the six global profiles and checks them on later sessions.
@@ -142,9 +144,11 @@ If your project already has an `AGENTS.md`, **do not replace it**: keep its cont
 
 For configuration, `~/.codex/config.toml` provides user-level values. Each `.codex/config.toml` in a trusted project adds its own values; for the same key, the project layer closest to the current directory wins, while absent keys remain inherited. Command-line options still have higher precedence. Codex ignores local `.codex/` layers until the project is trusted, and some sensitive keys cannot be overridden at project level.
 
-### Installation
+### Manual installation and recovery
 
-Requires Python 3.11 or newer. From this repository, run:
+This path is only for installation without the plugin, recovery after declining
+the hook, or explicit testing of the installer. Normal plugin users do not need
+to run this command. It requires Python 3.11 or newer:
 
 ```text
 python install.py --global
