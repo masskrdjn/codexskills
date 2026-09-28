@@ -1,14 +1,16 @@
 ---
 name: quota-orchestrator-setup
-description: Required one-time setup after installing codexskills. Install or update the complete scout, researcher, runner, builder, strategist, and architect Codex profiles globally. Use when the user asks to configure, install, update, or preview full routing, in English or French.
+description: Manually preview, repair, or update the complete codexskills routing profiles when the automatic SessionStart reconciliation is unavailable or reports a conflict. Use when the user asks to configure, repair, install, update, or preview full routing, in English or French.
 ---
 
-# Configure the complete profiles
+# Manually reconcile the complete profiles
 
-This is the required one-time global setup after plugin installation. The
-plugin contains a non-destructive installer and every required configuration
-template. The user does not need to edit any TOML file manually. Communicate
-in the user's language.
+The trusted SessionStart hook normally performs this global setup and keeps it
+current automatically. This skill is the manual preview and recovery path when
+the hook is declined, unavailable, or reports a conflict. The plugin contains
+a non-destructive installer and every required configuration template. The
+user does not need to edit any TOML file manually. Communicate in the user's
+language.
 
 ## Procedure
 
@@ -48,5 +50,6 @@ in the user's language.
   backup. Never overwrite a customized or unknown profile.
 - Do not edit `AGENTS.md`, `.codex/config.toml`, or profiles directly when the
   installer can perform the controlled merge.
-- Do not use an installation hook or run setup without an explicit user
-  request.
+- This manual workflow still requires an explicit user request. Do not use it
+  to refresh the marketplace or download a plugin version; the SessionStart
+  hook also remains strictly local and offline.

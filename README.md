@@ -39,6 +39,7 @@ At Standard [API prices](https://developers.openai.com/api/docs/models/gpt-6-lun
 ├── .agents/plugins/marketplace.json
 ├── plugins/codexskills/
 │   ├── .codex-plugin/plugin.json
+│   ├── hooks/hooks.json, hooks/reconcile.py
 │   ├── skills/
 │   │   ├── quota-orchestrator/SKILL.md
 │   │   └── quota-orchestrator-setup/SKILL.md
@@ -67,39 +68,40 @@ At Standard [API prices](https://developers.openai.com/api/docs/models/gpt-6-lun
 ## Install as a plugin
 
 > [!IMPORTANT]
-> Installing the plugin alone does not activate the six complete profiles.
-> One-time global setup is required. Until it is complete, the plugin
-> will say so at the start of tasks and will not claim that full routing is
-> active.
+> An approved repository marketplace installs the plugin by default. Codex
+> still asks you to trust its bundled SessionStart hook once. That hook then
+> configures the six global profiles and checks them on later sessions.
 
 From the local checkout, to test before publishing:
 
 ```text
 codex plugin marketplace add .
-codex plugin add codexskills@codexskills
 ```
 
 After publishing the repository:
 
 ```text
 codex plugin marketplace add masskrdjn/codexskills
-codex plugin add codexskills@codexskills
 ```
 
-As the required first step after installation, ask Codex:
+When Codex prompts you to review the bundled hook, trust it once if you want
+automatic setup. At SessionStart it runs a local Python 3.11+ script, without
+network access or marketplace upgrades. The script installs and later
+reconciles `scout`, `researcher`, `runner`, `builder`, `strategist`, and
+`architect` in `CODEX_HOME` (or `~/.codex` when unset). It merges compatible
+settings, backs up modified files under `CODEX_HOME/.codexskills-backup/`, and
+preserves divergent files with an actionable warning. State and a short-lived
+concurrency lock live in `PLUGIN_DATA`, or `CODEX_HOME/.codexskills-data` if
+the runtime does not provide it. A failure only defers reconciliation to the
+next session. Start a new Codex task to load newly installed profiles.
 
-```text
-Configure the full codexskills profiles.
-```
-
-The setup skill previews the changes, then installs `scout`, `researcher`,
-`runner`, `builder`, `strategist`, and `architect` in `CODEX_HOME` (or `~/.codex` when it is
-unset). It merges compatible settings, backs up modified files under
-`CODEX_HOME/.codexskills-backup/`, and stops on any warning or divergent
-profile until you confirm. Start a new Codex task afterward to load the
-profiles. Plugin installation itself makes no configuration changes and uses
-no hook. After setup, routing is detected automatically; you do not need to
-name the plugin in each request.
+If the hook is declined, unavailable, or warns about a conflict, ask Codex to
+"Configure the full codexskills profiles" for a manual preview and recovery.
+The marketplace's default-install policy does not bypass project, plugin, or
+hook trust. Updating the marketplace package is separate: the hook applies
+only the version already installed and never fetches a newer one. On systems
+without a `python` command resolving to Python 3.11+, use the manual setup or
+make that interpreter available before trusting the hook.
 
 ## Install without the plugin
 

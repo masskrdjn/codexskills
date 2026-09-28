@@ -39,6 +39,7 @@ Aux [tarifs API Standard](https://developers.openai.com/api/docs/models/gpt-6-lu
 ├── .agents/plugins/marketplace.json
 ├── plugins/codexskills/
 │   ├── .codex-plugin/plugin.json
+│   ├── hooks/hooks.json, hooks/reconcile.py
 │   ├── skills/
 │   │   ├── quota-orchestrator/SKILL.md
 │   │   └── quota-orchestrator-setup/SKILL.md
@@ -67,40 +68,42 @@ Aux [tarifs API Standard](https://developers.openai.com/api/docs/models/gpt-6-lu
 ## Installation comme plugin
 
 > [!IMPORTANT]
-> L'installation du plugin ne suffit pas à activer les six profils complets.
-> Une configuration globale unique est requise. Sans elle, le
-> plugin le signalera au début des tâches et ne prétendra pas que le routage
-> complet est actif.
+> Une marketplace de dépôt approuvée installe le plugin par défaut. Codex
+> demande encore une fois votre confiance pour son hook SessionStart. Ce hook
+> configure ensuite les six profils globaux et les vérifie aux sessions suivantes.
 
 Depuis le clone local, pour tester avant publication :
 
 ```text
 codex plugin marketplace add .
-codex plugin add codexskills@codexskills
 ```
 
 Après publication du dépôt :
 
 ```text
 codex plugin marketplace add masskrdjn/codexskills
-codex plugin add codexskills@codexskills
 ```
 
-Première étape obligatoire après l'installation, demandez dans Codex :
+Quand Codex propose d'examiner le hook fourni, accordez-lui votre confiance
+une fois si vous voulez la configuration automatique. À chaque SessionStart,
+un script local Python 3.11+ réconcilie `scout`, `researcher`, `runner`,
+`builder`, `strategist` et `architect` dans `CODEX_HOME` (ou `~/.codex`). Il ne
+fait aucun appel réseau ni mise à niveau de marketplace. Il fusionne les
+réglages compatibles, sauvegarde les fichiers modifiés sous
+`CODEX_HOME/.codexskills-backup/` et préserve les fichiers divergents avec un
+avertissement exploitable. L'état et un verrou de concurrence temporaire sont
+stockés sous `PLUGIN_DATA`, ou sous `CODEX_HOME/.codexskills-data` si cette
+variable est absente. Un échec reporte la réconciliation à la session suivante.
+Ouvrez une nouvelle tâche Codex pour charger les profils installés.
 
-```text
-Configure les profils complets de codexskills.
-```
-
-Le skill de configuration prévisualise les changements puis installe
-`scout`, `researcher`, `runner`, `builder`, `strategist` et `architect` dans `CODEX_HOME`
-(ou `~/.codex` s'il est absent). Il fusionne les réglages compatibles,
-sauvegarde les fichiers modifiés sous `CODEX_HOME/.codexskills-backup/` et
-s'arrête devant tout avertissement ou profil divergent jusqu'à confirmation.
-Ouvrez ensuite une nouvelle tâche Codex pour charger les profils. L'installation
-du plugin ne modifie aucune configuration et n'utilise aucun hook. Après cette
-configuration, le routage est détecté automatiquement : il n'est pas nécessaire
-de nommer le plugin dans chaque demande.
+Si le hook est refusé, indisponible, ou signale un conflit, demandez
+« Configure les profils complets de codexskills » pour prévisualiser et
+reprendre manuellement. L'installation par défaut ne contourne pas la confiance
+requise pour le dépôt, le plugin ou le hook. Le rafraîchissement du paquet de
+marketplace est distinct : le hook applique uniquement la version déjà
+installée et ne télécharge jamais une nouvelle version. Si la commande `python`
+ne lance pas Python 3.11 ou plus, utilisez la configuration manuelle ou rendez
+cet interpréteur disponible avant d'approuver le hook.
 
 ## Installation sans plugin
 

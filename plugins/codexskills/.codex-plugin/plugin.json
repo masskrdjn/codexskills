@@ -1,7 +1,7 @@
 {
   "name": "codexskills",
-  "version": "0.6.0",
-  "description": "Selective multi-model routing for Codex. Required after installation: configure the six global profiles.",
+  "version": "0.7.0",
+  "description": "Selective multi-model routing for Codex with automatic global profile reconciliation after hook trust.",
   "author": {
     "name": "masskrdjn",
     "url": "https://github.com/masskrdjn"
@@ -15,10 +15,11 @@
     "cost-optimization"
   ],
   "skills": "./skills/",
+  "hooks": "./hooks/hooks.json",
   "interface": {
     "displayName": "Codex Quota Orchestrator",
-    "shortDescription": "Install, then configure six routing profiles.",
-    "longDescription": "Required first step after plugin installation: run the guided global setup. It installs the scout, researcher, runner, builder, strategist, and architect profiles in CODEX_HOME; automatic full routing starts in a new Codex task afterward.",
+    "shortDescription": "Keep six routing profiles configured after hook trust.",
+    "longDescription": "After you trust the bundled SessionStart hook, Codex reconciles the scout, researcher, runner, builder, strategist, and architect profiles in CODEX_HOME. Existing custom files and settings are preserved; start a new task to load changes.",
     "developerName": "masskrdjn",
     "category": "Developer Tools",
     "capabilities": [
@@ -26,6 +27,6 @@
       "Write"
     ],
     "websiteURL": "https://github.com/masskrdjn/codexskills",
-    "defaultPrompt": "Configure the full codexskills routing profiles globally in CODEX_HOME now."
+    "defaultPrompt": "Check whether the codexskills SessionStart hook has reconciled my global routing profiles, and help resolve any warnings."
   }
 }
