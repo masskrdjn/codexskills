@@ -34,24 +34,36 @@ pertinents ; elle ne commence pas l'enquête. Avant le lancement, elle nomme la
 question confiée, le travail qu'elle n'effectuera pas et la preuve qui arrêtera
 le scout, puis vérifie son identifiant actif et l'attend.
 
-Les variantes facultatives `scout_complex` et `researcher_complex` emploient
-GPT-6 Sol. Choisir la première dès le triage si l'enquête doit départager des
-preuves contradictoires entre plusieurs composants ; choisir la seconde si
-des sources contradictoires conditionnent une décision technique importante.
-Sinon, utiliser les profils ordinaires GPT-6 Luna. Sans variante disponible,
-garder l'arbitrage complexe à la racine. Ces critères ne promeuvent pas une
-petite tâche locale vers un sous-agent.
+Les rôles définissent les missions, restrictions et livrables; choisir
+séparément le modèle et l'effort selon l'ambiguïté, les interactions, les
+contradictions, la validation et les conséquences d'une erreur. D'abord
+identifier les couples capables de satisfaire la qualité; parmi ces admissibles,
+comparer les tokens du travail complet, puis coût monétaire et délai séparément.
+GPT-6 Luna, GPT-6 Sol, GPT-5.6 Sol, GPT-6.1 Sol et GPT-6 Astra sont à comparer.
+Sol 6 et 5.6 sont des candidats ordinaires avec les mêmes exigences que 6.1,
+sans justification supplémentaire liée à leur ancienneté. Les valeurs TOML
+sont des secours provisoires, pas une preuve d'optimalité ou d'économie.
+Le plancher utilisateur Luna est high, y compris runner et générique; xhigh et
+max restent candidats selon la tâche, sans max automatique ni obligation
+d'épuiser tous les efforts inférieurs avant de comparer. Les niveaux d'effort
+ne sont pas équivalents entre modèles. La grille de quota-orchestrator est
+une hypothèse de politique; aucune économie n'est mesurée par cette révision.
+Les variantes scout_complex et researcher_complex sont des facilités de runtime,
+pas un classement obligatoire. Les petites tâches restent à la racine par défaut.
 
-Le rôle `strategist` emploie GPT-5.6 Sol avec un effort `medium`. Il reçoit un
-contexte déjà rassemblé et prépare une décision, un découpage ou un plan
-d'exécution lorsque le quoi-faire reste trop ambigu pour `builder`, sans
-explorer, exécuter, écrire ni déléguer. Son orchestration est logique : la
-racine conserve le lancement des agents, l'intégration et la responsabilité
-finale. Ne pas interposer `strategist` devant une implémentation déjà spécifiée.
-Le rôle `builder` emploie GPT-6 Sol avec un effort `high` pour l'implémentation
-substantielle et sa validation ciblée. `architect` reste le dernier palier en
-GPT-6 Astra `low`, réservé aux décisions structurantes, difficiles à corriger
-ou encore contradictoires après le cadrage ordinaire.
+Le strategist prépare un plan sur contexte déjà rassemblé, sans exploration,
+commande, écriture ni délégation; ne pas l'interposer devant une implémentation
+déjà spécifiée. Le builder implémente et valide son périmètre. Astra passe
+uniquement par architect pour une décision structurante ou difficile que sa
+capacité supplémentaire justifie; son effort est choisi selon cette décision,
+pas systématiquement low. Conserver son budget et ses restrictions.
+Annoncer rôle, modèle, effort, justification et signal de requalification.
+Si le runtime verrouille le profil, utiliser un profil dédié disponible
+préservant son contrat et ses restrictions; sinon garder la mission à la
+racine et signaler le choix non exécutable. Ne jamais prétendre qu'un override
+non appliqué a été utilisé. Le modèle racine choisi par l'utilisateur reste
+prioritaire. Une information manquante exige une collecte ciblée, pas une
+augmentation automatique de l'effort. Seule la racine requalifie les missions.
 
 Une délégation économique doit remplacer du travail racine, pas seulement
 ajouter un exécutant moins coûteux. La ligne de triage nomme le livrable
@@ -67,10 +79,18 @@ ou travaille sur un périmètre disjoint annoncé dans la ligne de triage, ou po
 elle constate qu'elle sait déjà conclure sans l'enfant, elle l'interrompt au
 lieu de payer deux fois le même travail.
 
-Un run de mesure avec `Complete = false` a exactement le statut
-`non observable` : ne jamais utiliser ni citer ses tokens ou durées dans une
-comparaison ou recommandation économique. Comparer au moins deux runs complets,
-sinon conclure qu'aucune comparaison économique n'est possible.
+Mesurer contexte, raisonnement, réponses, échanges d'outils, coordination,
+validation, corrections et reprises, racine, enfants et reviewers inclus.
+Ne pas ajouter Reasoning à Output ni Cached à Input lorsque ces compteurs
+sont déjà inclus. Séparer tokens, coût monétaire, délai, qualité et taux de
+succès; inclure succès et échecs complets sans biais de survivants.
+Un run `Complete = false` a exactement le statut `non observable` : ne jamais
+utiliser ses tokens ou durées dans les ratios ou recommandations économiques.
+Comparer les mêmes tâches, critères, contextes et outils, apparier les runs
+complets et randomiser l'ordre; publier froid et chaud séparément. Deux runs
+complets non appariés ne permettent pas de conclusion économique; une
+comparaison exploratoire requiert au moins deux paires par tâche/scénario.
+Le seuil de cinq paires pour une délégation locale économique reste applicable.
 
 Les sous-agents déjà mandatés suivent leur mission et leur rôle : ils ne
 chargent pas le skill d'orchestration, ne refont pas le triage et ne délèguent
@@ -103,7 +123,7 @@ ne déclenche pas de revue supplémentaire. Les consommations `guardian_review`
 non déclenchées par le projet sont mesurées séparément et incluses dans le coût
 total, sans être présentées comme un levier directement contrôlable.
 
-Les rôles nommés portent leurs modèles et leurs efforts. Leur `sandbox_mode`
+Les profils nommés portent des modèles et efforts de secours. Leur `sandbox_mode`
 n'est pas appliqué : le bac à sable du parent prévaut, ne pas compter sur un
 rôle pour restreindre un sous-agent. Ne pas laisser deux agents
 d'implémentation éditer les mêmes fichiers.
@@ -125,6 +145,6 @@ décision dans une session aux permissions adaptées.
 Lorsqu'ils sont lancés comme sous-agents, `strategist` et `architect` ne font
 ni exploration, ni commandes, ni écriture, ni délégation.
 Après la réponse, vérifier dans la trace persistante le rôle, le modèle et
-l'effort effectifs. Sans preuve `architect` + `gpt-6-astra` + `low`, écarter le
+l'effort effectifs. Sans preuve `architect` + `gpt-6-astra` + effort annoncé, écarter le
 résultat comme non conforme et ne jamais annoncer une consultation ou une
 consommation Astra.

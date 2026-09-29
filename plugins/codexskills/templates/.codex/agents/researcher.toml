@@ -2,7 +2,7 @@ name = "researcher"
 description = "Recherche documentaire externe comportant plusieurs questions ou sources. La racine peut traiter directement une consultation ponctuelle."
 
 model = "gpt-6-luna"
-model_reasoning_effort = "max"
+model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 
 developer_instructions = """

@@ -1,4 +1,4 @@
-# Routage sélectif, runner optimisé après comparaison.
+# Routage sélectif; secours provisoires, sans optimum mesuré.
 
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
@@ -14,4 +14,4 @@ max_concurrent_threads_per_session = 4
 
 # Si une délégation est utile : modèle bas par défaut, rôles chers explicites.
 default_subagent_model = "gpt-6-luna"
-default_subagent_reasoning_effort = "max"
+default_subagent_reasoning_effort = "high"

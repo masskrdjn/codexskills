@@ -2,7 +2,7 @@ name = "runner"
 description = "Exécution de validations assez longues et indépendantes pour amortir la coordination. Les lots déterministes bornés restent à la racine."
 
 model = "gpt-6-luna"
-model_reasoning_effort = "medium"
+model_reasoning_effort = "high"
 sandbox_mode = "workspace-write"
 
 developer_instructions = """

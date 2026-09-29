@@ -1,8 +1,8 @@
 name = "researcher_complex"
 description = "Recherche complexe en lecture seule : synthèse de sources contradictoires pour une décision technique importante."
 
-model = "gpt-6-sol"
-model_reasoning_effort = "max"
+model = "gpt-6.1-sol"
+model_reasoning_effort = "xhigh"
 sandbox_mode = "read-only"
 
 developer_instructions = """

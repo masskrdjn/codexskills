@@ -41,6 +41,19 @@ RELEASE_0_5_SHA256 = {
     ".codex/agents/builder.toml": "31e154b6a6ee67caab4bc3c25fdb674d073f89c879ec83f64e560e6a09a9c60b",
     ".agents/skills/quota-orchestrator/SKILL.md": "1bdf0be6aa75e6784ff79bbd924846671e1f9f3df9ace1471ca0a52320c66e12",
 }
+# Exact files distributed in 0.7.0, before task-based selection and the Luna floor.
+RELEASE_0_7_SHA256 = {
+    ".codex/config.toml": "d5376090d44478d616ee2a73c980b3de73bbaacfac2a08f7a2bd0cbcd6b3e6f1",
+    ".codex/agents/runner.toml": "026a979e24747f720dd5bf74bc8836e38883aa298ec8ebaf9234de753e86d8ec",
+    ".codex/agents/researcher.toml": "44c189b44a09fb0c6993af108c4701a1ad33a7973ba2764729146800c03cbf54",
+    "AGENTS.md": "7a452e7c86674371591b45ed2d825e2225c2d3a223d2cb6c765c2a61fbfa2b85",
+    ".agents/skills/quota-orchestrator/SKILL.md": "f31101d44017be19531d4b048a751cab3fb238d93c490ac4b4296ff7006c9864",
+    ".codex/agents/builder.toml": "b08f4657f1a0ac70e4bd0b3ff9fc1fb238aac99539146d39111080063d783aff",
+    ".codex/agents/strategist.toml": "8bf9f04eae36817bd54fd25c7b97a05d6c98322f998472c538e218424b4db7c0",
+    ".codex/agents/scout_complex.toml": "bf161c784d8cc131442f6723ed36374a03669aca886a641e94a10070b51fcf16",
+    ".codex/agents/researcher_complex.toml": "bcdee495e761d517ff22f370dceca38cf0d3c79ba1cabd8e89c649b4daf1a5cb",
+}
+RELEASE_0_7_AGENTS_BLOCK_SHA256 = "ed3a2cef5b69b266d417e970e8ef2533cd4a400eb121b34e8c537fa425888d91"
 LEGACY_AGENTS_BLOCK_SHA256 = "cead871fee8a8ae0179552d16770ab0344d7869de9d24c3fdbc58ef1cf4c86e5"
 RELEASE_0_5_AGENTS_BLOCK_SHA256 = "290aa11f0c6a6fd45c0a013b85a9bd11b488d1fc4c7412b63c2c64a18a7d0ec9"
 CONFIG_KEYS = {
@@ -74,6 +87,7 @@ def _is_legacy(path: str, content: bytes) -> bool:
         LEGACY_SHA256.get(path),
         PREVIOUS_SHA256.get(path),
         RELEASE_0_5_SHA256.get(path),
+        RELEASE_0_7_SHA256.get(path),
     )
 
 
@@ -233,7 +247,7 @@ def _merge_agents(source: bytes, target: bytes, path: Path) -> tuple[bytes, list
         end = target_text.index(END, start)
         old_block = target_text[start:end].strip("\r\n").replace("\r\n", "\n")
         old_digest = hashlib.sha256(old_block.encode("utf-8")).hexdigest()
-        if old_digest in (LEGACY_AGENTS_BLOCK_SHA256, RELEASE_0_5_AGENTS_BLOCK_SHA256):
+        if old_digest in (LEGACY_AGENTS_BLOCK_SHA256, RELEASE_0_5_AGENTS_BLOCK_SHA256, RELEASE_0_7_AGENTS_BLOCK_SHA256):
             merged = target_text[:start] + newline + block + newline + target_text[end:]
             return _encode(merged, bom), []
         return target, [f"{path}: bloc codexskills existant conservé car il diffère de la source"]

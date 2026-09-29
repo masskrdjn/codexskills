@@ -1,7 +1,7 @@
 name = "strategist"
 description = "Conseiller de cadrage et d'orchestration logique. Décompose un problème complexe, tranche les arbitrages intermédiaires et prépare un plan exécutable. N'implémente pas."
 
-model = "gpt-5.6-sol"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "medium"
 sandbox_mode = "read-only"
 
