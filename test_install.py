@@ -46,6 +46,146 @@ def snapshot(root):
     return {path.relative_to(root): path.read_bytes() for path in root.rglob("*") if path.is_file()}
 
 
+
+def exercise_authentic_0_8_upgrade(base):
+    """Both entry points, project/global, exact backups, no-op and customs."""
+    fixtures = ROOT / "fixtures/release_0_8_0"
+    templates = fixtures / "plugins/codexskills/templates"
+    checked = 0
+    for index, script in enumerate((SCRIPT, ROOT / "plugins/codexskills/scripts/install.py")):
+        for global_scope in (False, True):
+            target = base / f"release-0.8-{index}-{global_scope}"
+            target.mkdir()
+            old_files = {}
+            destinations = {}
+            for source in templates.rglob("*"):
+                if not source.is_file():
+                    continue
+                relative = source.relative_to(templates)
+                if global_scope:
+                    if relative == Path(".codex/config.toml"):
+                        relative = Path("config.toml")
+                    elif relative.parts[:2] == (".codex", "agents"):
+                        relative = Path("agents") / source.name
+                    elif relative.parts[0] == ".agents":
+                        relative = Path("skills/quota-orchestrator/SKILL.md")
+                data = source.read_bytes()
+                if relative == Path("AGENTS.md"):
+                    data = b"# user prefix\n" + (fixtures / "managed_AGENTS.md").read_bytes() + b"# user suffix\n"
+                path = target / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(data)
+                old_files[relative] = data
+                destinations[relative] = ROOT / "plugins/codexskills/templates" / source.relative_to(templates)
+
+            def invoke():
+                args = [sys.executable, str(script)]
+                environment = {**__import__("os").environ, "CODEX_HOME": str(target)}
+                args += ["--global"] if global_scope else [str(target)]
+                result = subprocess.run(args, capture_output=True, text=True, env=environment)
+                assert result.returncode == 0, result.stdout + result.stderr
+                return result
+
+            first = invoke()
+            assert not first.stderr, first.stderr
+            assert "sauvegarde:" in first.stdout
+            backup_dirs = list((target / ".codexskills-backup").iterdir())
+            assert len(backup_dirs) == 1
+            for relative, old_data in old_files.items():
+                current = (target / relative).read_bytes()
+                if current != old_data:
+                    assert (backup_dirs[0] / relative).read_bytes() == old_data, relative
+                if relative != Path("AGENTS.md"):
+                    assert current == destinations[relative].read_bytes(), relative
+            agents = (target / "AGENTS.md").read_text(encoding="utf-8")
+            assert agents.startswith("# user prefix\n") and agents.endswith("# user suffix\n")
+            assert "pas en nombre de tokens" in agents
+            upgraded = snapshot(target)
+            second = invoke()
+            assert not second.stderr and "résumé: 0 changement(s)" in second.stdout
+            assert snapshot(target) == upgraded
+
+            # All genuinely customized 0.8.0 roles and the skill stay byte-exact.
+            for relative, old_data in old_files.items():
+                if relative.name == "config.toml":
+                    custom = old_data.replace(b'default_subagent_reasoning_effort = "high"', b'default_subagent_reasoning_effort = "low"')
+                elif relative == Path("AGENTS.md"):
+                    custom = old_data.replace(b"<!-- codexskills:routing-b:end -->", b"# personalized managed rule\n<!-- codexskills:routing-b:end -->")
+                else:
+                    custom = old_data + b"\n# genuine user customization\n"
+                (target / relative).write_bytes(custom)
+            customized = snapshot(target)
+            preserved = invoke()
+            assert "avertissement" in preserved.stderr
+            # The only change is the merge of the missing wait bounds into the user's config.
+            assert "résumé: 1 changement(s)" in preserved.stdout
+            after = snapshot(target)
+            config_name = Path("config.toml") if global_scope else Path(".codex/config.toml")
+            for relative, data in customized.items():
+                if relative != config_name:
+                    assert after[relative] == data, relative
+            merged_config = after[config_name].decode("utf-8")
+            assert 'default_subagent_reasoning_effort = "low"' in merged_config, "the user's own value is kept"
+            assert "min_wait_timeout_ms = 300000" in merged_config and "max_wait_timeout_ms = 3600000" in merged_config
+            checked += 1
+    print(f"PASS: authentic 0.8.0 upgrade, exact backups, no-op and custom preservation ({checked} installer/scope combinations).")
+
+def exercise_wait_bounds_merge(installer):
+    """The wait bounds are one atomic group: Codex rejects a configuration unless min <= default <= max."""
+    import tomllib
+
+    source = (ROOT / ".codex/config.toml").read_bytes()
+    proposed = tomllib.loads(source.decode("utf-8"))["features"]["multi_agent_v2"]
+    assert proposed == {"min_wait_timeout_ms": 300000, "default_wait_timeout_ms": 300000, "max_wait_timeout_ms": 3600000}
+
+    def bounds_ok(tree):
+        wait = tree.get("features", {}).get("multi_agent_v2")
+        if not isinstance(wait, dict):
+            return True
+        low, default, high = (wait.get(key) for key in ("min_wait_timeout_ms", "default_wait_timeout_ms", "max_wait_timeout_ms"))
+        values = [value for value in (low, default, high) if value is not None]
+        return (all(10000 <= value <= 3600000 for value in values) and (low is None or default is None or low <= default)
+                and (default is None or high is None or default <= high) and (low is None or high is None or low <= high))
+
+    def unchanged(user, merged, name, path=""):
+        for key, value in user.items():
+            assert key in merged, (name, path + key)
+            if isinstance(value, dict):
+                unchanged(value, merged[key], name, path + key + ".")
+            else:
+                assert merged[key] == value, (name, path + key)
+
+    nl = chr(10)
+    cases = {
+        "empty": ("", True),
+        "features only": ("[features]" + nl + "multi_agent = true" + nl, True),
+        "user config": ('model = "x"' + nl + nl + "[features]" + nl + "multi_agent = true" + nl + "custom = 1" + nl + nl + "[agents]" + nl + "enabled = true" + nl, True),
+        "own full trio": ("[features.multi_agent_v2]" + nl + "min_wait_timeout_ms = 480000" + nl + "default_wait_timeout_ms = 480000" + nl + "max_wait_timeout_ms = 900000" + nl, False),
+        "only a low max": ("[features.multi_agent_v2]" + nl + "max_wait_timeout_ms = 120000" + nl, False),
+        "table with enabled only": ("[features.multi_agent_v2]" + nl + "enabled = true" + nl, True),
+        "dotted table after [features]": ("[features]" + nl + "custom = 1" + nl + "[features.multi_agent_v2]" + nl + "enabled = true" + nl, True),
+        "agents first": ("[agents]" + nl + "enabled = true" + nl + nl + "[features.multi_agent_v2]" + nl + "enabled = true" + nl, True),
+        "boolean flag": ("[features]" + nl + "multi_agent = true" + nl + "multi_agent_v2 = true" + nl, False),
+        "dotted key without header": ("[features]" + nl + "multi_agent = true" + nl + "multi_agent_v2.enabled = true" + nl, False),
+        "inline table": ("[features]" + nl + "multi_agent = true" + nl + "multi_agent_v2 = { enabled = true }" + nl, False),
+    }
+    for name, (target, receives_bounds) in cases.items():
+        merged, warnings = installer._merge_config(source, target.encode("utf-8"), Path("config.toml"))
+        tree = tomllib.loads(merged.decode("utf-8"))
+        unchanged(tomllib.loads(target), tree, name)
+        assert bounds_ok(tree), name
+        misplaced = [key for table in ("agents", "features") for key in tree.get(table, {}) if key.endswith("_wait_timeout_ms")]
+        assert not misplaced, (name, misplaced)
+        wait = tree["features"].get("multi_agent_v2")
+        assert (isinstance(wait, dict) and set(proposed) <= set(wait) and all(wait[key] == proposed[key] for key in proposed)) == receives_bounds, (name, wait)
+        assert installer._merge_config(source, merged, Path("config.toml"))[0] == merged, f"{name}: not idempotent"
+        if not receives_bounds and not isinstance(wait, dict) or name in ("own full trio", "only a low max", "dotted key without header", "inline table", "boolean flag"):
+            assert warnings, f"{name}: the user must be told why the wait bounds were not added"
+    bom, crlf = installer._merge_config(source, b"" + bytes([0xEF, 0xBB, 0xBF]) + b"[features]" + bytes([13, 10]) + b"multi_agent = true" + bytes([13, 10]), Path("config.toml"))
+    assert bom.startswith(bytes([0xEF, 0xBB, 0xBF])) and tomllib.loads(bom.decode("utf-8-sig"))["features"]["multi_agent_v2"] == proposed
+    print("PASS: wait bounds merged only as a whole group, never over the user's own bounds, and never into another table.")
+
+
 if __name__ == "__main__":
     with tempfile.TemporaryDirectory(prefix="codexskills-install-") as temporary:
         base = Path(temporary)
@@ -161,6 +301,7 @@ if __name__ == "__main__":
         installer = importlib.util.module_from_spec(spec)
         sys.modules[spec.name] = installer
         spec.loader.exec_module(installer)
+        exercise_wait_bounds_merge(installer)
         legacy = base / "legacy"
         (legacy / ".codex/agents").mkdir(parents=True)
         old_config = b'[agents]\ndefault_subagent_model = "gpt-5.6-luna"\n'
@@ -216,5 +357,7 @@ if __name__ == "__main__":
                 raise AssertionError("rollback failure was not raised")
         assert not any((rollback / path).exists() for path in EXPECTED)
         assert list(rollback.iterdir()) == []
+
+        exercise_authentic_0_8_upgrade(base)
 
     print("PASS: project/global install, merge, conflicts, override, idempotence, dry-run, invalid TOML, symlink refusal, rollback.")

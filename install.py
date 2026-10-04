@@ -53,9 +53,27 @@ RELEASE_0_7_SHA256 = {
     ".codex/agents/scout_complex.toml": "bf161c784d8cc131442f6723ed36374a03669aca886a641e94a10070b51fcf16",
     ".codex/agents/researcher_complex.toml": "bcdee495e761d517ff22f370dceca38cf0d3c79ba1cabd8e89c649b4daf1a5cb",
 }
+# Authentic 0.8.0 distribution, preserved in fixtures/release_0_8_0.
+RELEASE_0_8_SHA256 = {
+    "AGENTS.md": "3e4a19d21cdcbc6308d229c9183f9f84806164d1835f50ab376d7dedb2a77ea8",
+    ".codex/config.toml": "629e472aa2b829045dd08d5090973fb1d5d74f718e52d55e50fccd3925dd38dc",
+    ".codex/agents/architect.toml": "26d902b1539fdcad6cee13bfaecdd0a97179f983408b4e983e9d4d3f06c3d061",
+    ".codex/agents/builder.toml": "c0fa44686cd79eae3ce5d47fa07653d35713eb3267e8bbc218efea5a72536fc4",
+    ".codex/agents/researcher.toml": "4f7985baf06881e9476222a89a81a5532fa407e6f5bc8781334b48ecab895e2e",
+    ".codex/agents/researcher_complex.toml": "75ef288f755f1fb496e7d6aea8d797fede9c5cc39c78fb5d468129dd55195db9",
+    ".codex/agents/runner.toml": "b4ba262b78798c57692db57b115b81971c31ec085d9dc64346ae2ff3dce6232d",
+    ".codex/agents/scout.toml": "12137ef6e7cea9311e4c4a075e816ffafe7752ee054e49a32d1f4b5aecc610db",
+    ".codex/agents/scout_complex.toml": "64ca07998abdb1694d112a0d40f5d4f88fb00312e07c0dcb60e8c223eace23e3",
+    ".codex/agents/strategist.toml": "34f50d8c6757a76c56c51a089d2599904ac3836ce98d0dda9b635661b7b2a4d3",
+    ".agents/skills/quota-orchestrator/SKILL.md": "9724896967c1861c03fa87c3930260d1fe5f368244a283fddae35a7aedd80735",
+}
+RELEASE_0_8_AGENTS_BLOCK_SHA256 = "780fbcfa4a6dac1eca2d01c15ee83c9944b436a4c4ed846a490ae4864ab1c670"
 RELEASE_0_7_AGENTS_BLOCK_SHA256 = "ed3a2cef5b69b266d417e970e8ef2533cd4a400eb121b34e8c537fa425888d91"
 LEGACY_AGENTS_BLOCK_SHA256 = "cead871fee8a8ae0179552d16770ab0344d7869de9d24c3fdbc58ef1cf4c86e5"
 RELEASE_0_5_AGENTS_BLOCK_SHA256 = "290aa11f0c6a6fd45c0a013b85a9bd11b488d1fc4c7412b63c2c64a18a7d0ec9"
+# The wait bounds are one atomic group: Codex refuses a configuration unless min <= default <= max,
+# so they are added only when the user has none of the three and defines multi_agent_v2 nowhere else.
+WAIT_SECTION = ("features", "multi_agent_v2")
 CONFIG_KEYS = {
     (): ("approval_policy", "sandbox_mode"),
     ("features",): ("multi_agent",),
@@ -65,9 +83,14 @@ CONFIG_KEYS = {
         "default_subagent_model",
         "default_subagent_reasoning_effort",
     ),
+    WAIT_SECTION: ("min_wait_timeout_ms", "default_wait_timeout_ms", "max_wait_timeout_ms"),
 }
-TABLE_RE = re.compile(r"^\s*\[([A-Za-z0-9_-]+)]\s*(?:#.*)?$")
+TABLE_RE = re.compile(r"^\s*\[([A-Za-z0-9_-]+(?:[.][A-Za-z0-9_-]+)*)]\s*(?:#.*)?$")
 KEY_RE = re.compile(r"^\s*([A-Za-z0-9_-]+)\s*=")
+
+
+def _table(match) -> tuple[str, ...]:
+    return tuple(match.group(1).split("."))
 
 
 class InstallError(Exception):
@@ -88,6 +111,7 @@ def _is_legacy(path: str, content: bytes) -> bool:
         PREVIOUS_SHA256.get(path),
         RELEASE_0_5_SHA256.get(path),
         RELEASE_0_7_SHA256.get(path),
+        RELEASE_0_8_SHA256.get(path),
     )
 
 
@@ -126,14 +150,14 @@ def _source_assignments(text: str) -> dict[tuple[tuple[str, ...], str], str]:
     found = {}
     for line in text.splitlines():
         if match := TABLE_RE.match(line):
-            section = (match.group(1),)
+            section = _table(match)
         elif match := KEY_RE.match(line):
             key = match.group(1)
             if section in CONFIG_KEYS and key in CONFIG_KEYS[section]:
                 found[(section, key)] = line.strip()
     expected = {(section, key) for section, keys in CONFIG_KEYS.items() for key in keys}
     if found.keys() != expected:
-        raise InstallError(".codex/config.toml source ne contient pas les sept clés attendues")
+        raise InstallError(f".codex/config.toml source ne contient pas les {len(expected)} clés attendues")
     return found
 
 
@@ -143,7 +167,7 @@ def _upgrade_default_model(text: str) -> str:
     for index, line in enumerate(lines):
         raw = line.rstrip("\r\n")
         if header := TABLE_RE.match(raw):
-            section = (header.group(1),)
+            section = _table(header)
         elif raw.lstrip().startswith("["):
             section = None
         elif section == ("agents",) and (key := KEY_RE.match(raw)) and key.group(1) == "default_subagent_model":
@@ -172,6 +196,14 @@ def _merge_config(source: bytes, target: bytes, path: Path, upgrade_default_mode
     assignments = _source_assignments(source_text)
     missing: dict[tuple[str, ...], list[str]] = {}
     warnings = []
+    has_wait_header = any(
+        (match := TABLE_RE.match(line.rstrip("\r\n"))) and _table(match) == WAIT_SECTION
+        for line in target_text.splitlines()
+    )
+    features = target_tree.get("features")
+    wait_defined = isinstance(features, dict) and "multi_agent_v2" in features
+    wait_present = any(_value(target_tree, WAIT_SECTION, key)[0] for key in CONFIG_KEYS[WAIT_SECTION])
+    wait_blocked = wait_present or (wait_defined and not has_wait_header)
 
     for section, keys in CONFIG_KEYS.items():
         for key in keys:
@@ -180,12 +212,21 @@ def _merge_config(source: bytes, target: bytes, path: Path, upgrade_default_mode
             assert source_present
             dotted = ".".join((*section, key))
             if not target_present:
+                if section == WAIT_SECTION:
+                    if wait_blocked:
+                        continue
+                    missing.setdefault(section, []).append(assignments[(section, key)])
+                    continue
                 missing.setdefault(section, []).append(assignments[(section, key)])
             elif target_value != source_value:
                 warnings.append(
                     f"{path}: {dotted} conservé ({target_value!r}, valeur proposée {source_value!r})"
                 )
 
+    if wait_blocked and any(not _value(target_tree, WAIT_SECTION, key)[0] for key in CONFIG_KEYS[WAIT_SECTION]):
+        warnings.append(
+            f"{path}: features.multi_agent_v2 déjà configuré : plancher d'attente de cinq minutes non ajouté"
+        )
     if not missing:
         return target, warnings
     if "'''" in target_text or '\"\"\"' in target_text:
@@ -200,14 +241,14 @@ def _merge_config(source: bytes, target: bytes, path: Path, upgrade_default_mode
             continue
         if stripped.startswith("["):
             match = TABLE_RE.match(line.rstrip("\r\n"))
-            headers.append((index, (match.group(1),) if match else None))
+            headers.append((index, _table(match) if match else None))
 
-    inserts: list[tuple[int, str]] = []
+    inserts: list[tuple[int, int, str]] = []  # (line, 0 = into an existing table / 1 = new table, text)
     if root_lines := missing.get(()) :
         index = headers[0][0] if headers else len(lines)
-        inserts.append((index, newline.join(root_lines) + newline))
+        inserts.append((index, 0, newline.join(root_lines) + newline))
 
-    for section in (("features",), ("agents",)):
+    for section in (name for name in CONFIG_KEYS if name):
         values = missing.get(section)
         if not values:
             continue
@@ -215,14 +256,21 @@ def _merge_config(source: bytes, target: bytes, path: Path, upgrade_default_mode
         if matching:
             start = matching[0]
             index = next((position for position, _ in headers if position > start), len(lines))
-            inserts.append((index, newline.join(values) + newline))
+            inserts.append((index, 0, newline.join(values) + newline))
         else:
-            if section[0] in target_tree:
+            existing = target_tree.get(section[0])
+            # A table known only through dotted headers ([features.x]) can be declared later with its own header.
+            implicit = isinstance(existing, dict) and all(
+                isinstance(value, dict) and any(name is not None and name[:2] == (section[0], key) for _, name in headers)
+                for key, value in existing.items()
+            )
+            if len(section) == 1 and section[0] in target_tree and not implicit:
                 raise InstallError(f"{path}: section {section[0]!r} impossible à localiser pour une fusion sûre")
             prefix = "" if not lines or lines[-1].endswith(("\n", "\r")) else newline
-            inserts.append((len(lines), f"{prefix}{newline}[{section[0]}]{newline}" + newline.join(values) + newline))
+            inserts.append((len(lines), 1, f"{prefix}{newline}[{'.'.join(section)}]{newline}" + newline.join(values) + newline))
 
-    for index, addition in reversed(sorted(inserts, key=lambda item: item[0])):
+    # Keys going into an existing table must land before any new table appended at the same line.
+    for index, _, addition in reversed(sorted(inserts, key=lambda item: item[:2])):
         lines[index:index] = [addition]
     merged = _encode("".join(lines), bom)
     _parse_toml(merged, path)
@@ -247,7 +295,7 @@ def _merge_agents(source: bytes, target: bytes, path: Path) -> tuple[bytes, list
         end = target_text.index(END, start)
         old_block = target_text[start:end].strip("\r\n").replace("\r\n", "\n")
         old_digest = hashlib.sha256(old_block.encode("utf-8")).hexdigest()
-        if old_digest in (LEGACY_AGENTS_BLOCK_SHA256, RELEASE_0_5_AGENTS_BLOCK_SHA256, RELEASE_0_7_AGENTS_BLOCK_SHA256):
+        if old_digest in (LEGACY_AGENTS_BLOCK_SHA256, RELEASE_0_5_AGENTS_BLOCK_SHA256, RELEASE_0_7_AGENTS_BLOCK_SHA256, RELEASE_0_8_AGENTS_BLOCK_SHA256):
             merged = target_text[:start] + newline + block + newline + target_text[end:]
             return _encode(merged, bom), []
         return target, [f"{path}: bloc codexskills existant conservé car il diffère de la source"]

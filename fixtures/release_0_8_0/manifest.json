@@ -1,0 +1,80 @@
+{
+  "version": "0.8.0",
+  "commit": "4f6ffbd4b7b262b8bbb255b7a1eefb4a465b8af8",
+  "files": {
+    "AGENTS.md": {
+      "sha256": "3e4a19d21cdcbc6308d229c9183f9f84806164d1835f50ab376d7dedb2a77ea8",
+      "normalized_sha256": "3e4a19d21cdcbc6308d229c9183f9f84806164d1835f50ab376d7dedb2a77ea8"
+    },
+    "install.py": {
+      "sha256": "d2e53d0c578ed10fbd81f5f1c5ab0678e6ec271de50f6310948edd14635a268b",
+      "normalized_sha256": "d2e53d0c578ed10fbd81f5f1c5ab0678e6ec271de50f6310948edd14635a268b"
+    },
+    "plugins/codexskills/scripts/install.py": {
+      "sha256": "d77f322b015dc58d20c01de4e72c7c860e8199c6c85801590921e2453183d97f",
+      "normalized_sha256": "d77f322b015dc58d20c01de4e72c7c860e8199c6c85801590921e2453183d97f"
+    },
+    "plugins/codexskills/skills/quota-orchestrator/SKILL.md": {
+      "sha256": "f3f3ef0acefa3d36c9985278b69b892cca1c4877d5554d8f46d3352bb101388a",
+      "normalized_sha256": "f3f3ef0acefa3d36c9985278b69b892cca1c4877d5554d8f46d3352bb101388a"
+    },
+    "plugins/codexskills/.codex-plugin/plugin.json": {
+      "sha256": "d06d099b129daa7723c7f8e26b3c4af60cb8244a1c6078613d0800e749cce697",
+      "normalized_sha256": "13a044d5cd5759ff27084ccb8ddc934ba81c80e427a7609a7e836ff8f3023be9"
+    },
+    "plugins/codexskills/hooks/hooks.json": {
+      "sha256": "1cdd109be36d64d95971f9cf20c6a3e408b458946a05d60186e3bbc0b80ae542",
+      "normalized_sha256": "1cdd109be36d64d95971f9cf20c6a3e408b458946a05d60186e3bbc0b80ae542"
+    },
+    "plugins/codexskills/hooks/reconcile.py": {
+      "sha256": "bb061d9e28b2189cbc4e46a9d5d52c67ac4ef82c1031dfce2494eddc93907792",
+      "normalized_sha256": "bb061d9e28b2189cbc4e46a9d5d52c67ac4ef82c1031dfce2494eddc93907792"
+    },
+    "plugins/codexskills/templates/AGENTS.md": {
+      "sha256": "3e4a19d21cdcbc6308d229c9183f9f84806164d1835f50ab376d7dedb2a77ea8",
+      "normalized_sha256": "3e4a19d21cdcbc6308d229c9183f9f84806164d1835f50ab376d7dedb2a77ea8"
+    },
+    "plugins/codexskills/templates/.codex/config.toml": {
+      "sha256": "629e472aa2b829045dd08d5090973fb1d5d74f718e52d55e50fccd3925dd38dc",
+      "normalized_sha256": "629e472aa2b829045dd08d5090973fb1d5d74f718e52d55e50fccd3925dd38dc"
+    },
+    "plugins/codexskills/templates/.codex/agents/architect.toml": {
+      "sha256": "c1c7deb625600a523e44004c0e40f23177844500694190bb1904212879f94f93",
+      "normalized_sha256": "26d902b1539fdcad6cee13bfaecdd0a97179f983408b4e983e9d4d3f06c3d061"
+    },
+    "plugins/codexskills/templates/.codex/agents/builder.toml": {
+      "sha256": "c391d97affa76f3d8751aabc9b934b1a716fe202fe18dc89de1ed6c197f27993",
+      "normalized_sha256": "c0fa44686cd79eae3ce5d47fa07653d35713eb3267e8bbc218efea5a72536fc4"
+    },
+    "plugins/codexskills/templates/.codex/agents/researcher.toml": {
+      "sha256": "4f7985baf06881e9476222a89a81a5532fa407e6f5bc8781334b48ecab895e2e",
+      "normalized_sha256": "4f7985baf06881e9476222a89a81a5532fa407e6f5bc8781334b48ecab895e2e"
+    },
+    "plugins/codexskills/templates/.codex/agents/researcher_complex.toml": {
+      "sha256": "23040f1a35dbe7f6b2cfbc4f46ab1128a709cc1158b5d09db5a27a9ccc6944ae",
+      "normalized_sha256": "75ef288f755f1fb496e7d6aea8d797fede9c5cc39c78fb5d468129dd55195db9"
+    },
+    "plugins/codexskills/templates/.codex/agents/runner.toml": {
+      "sha256": "b4ba262b78798c57692db57b115b81971c31ec085d9dc64346ae2ff3dce6232d",
+      "normalized_sha256": "b4ba262b78798c57692db57b115b81971c31ec085d9dc64346ae2ff3dce6232d"
+    },
+    "plugins/codexskills/templates/.codex/agents/scout.toml": {
+      "sha256": "c735a97cf21af40fd19d1ff76e0705f8019fec141ced9fb92b4ca7503457c9d5",
+      "normalized_sha256": "12137ef6e7cea9311e4c4a075e816ffafe7752ee054e49a32d1f4b5aecc610db"
+    },
+    "plugins/codexskills/templates/.codex/agents/scout_complex.toml": {
+      "sha256": "aa45d85dc3f999bf96b8b6972a64d52b78bb53981b3b62d6cab8dc0097c25f6d",
+      "normalized_sha256": "64ca07998abdb1694d112a0d40f5d4f88fb00312e07c0dcb60e8c223eace23e3"
+    },
+    "plugins/codexskills/templates/.codex/agents/strategist.toml": {
+      "sha256": "3120ed908143270eb037525da2f91c667266cc85343d36eed229a5c8098a0bf3",
+      "normalized_sha256": "34f50d8c6757a76c56c51a089d2599904ac3836ce98d0dda9b635661b7b2a4d3"
+    },
+    "plugins/codexskills/templates/.agents/skills/quota-orchestrator/SKILL.md": {
+      "sha256": "9724896967c1861c03fa87c3930260d1fe5f368244a283fddae35a7aedd80735",
+      "normalized_sha256": "9724896967c1861c03fa87c3930260d1fe5f368244a283fddae35a7aedd80735"
+    }
+  },
+  "managed_agents_block_sha256": "780fbcfa4a6dac1eca2d01c15ee83c9944b436a4c4ed846a490ae4864ab1c670",
+  "managed_agents_file_sha256": "5d1ce0e9a34069d329a9ed6c920a94a94e9815350d060d94cad4c0a090c27f15"
+}

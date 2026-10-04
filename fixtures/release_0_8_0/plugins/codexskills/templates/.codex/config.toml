@@ -15,12 +15,3 @@ max_concurrent_threads_per_session = 4
 # Si une délégation est utile : modèle bas par défaut, rôles chers explicites.
 default_subagent_model = "gpt-6-luna"
 default_subagent_reasoning_effort = "high"
-
-# Attente d'un enfant : un seul wait_agent long, au lieu de plusieurs requêtes racine à
-# tarif complet (mesuré : quatre attentes de 60 s = un quart du coût d'une racine Astra).
-# wait_agent revient dès que l'enfant répond. Garder min <= default <= max, sinon Codex
-# refuse de charger la configuration.
-[features.multi_agent_v2]
-min_wait_timeout_ms = 300000
-default_wait_timeout_ms = 300000
-max_wait_timeout_ms = 3600000
