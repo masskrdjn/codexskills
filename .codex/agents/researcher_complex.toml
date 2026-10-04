@@ -1,5 +1,5 @@
 name = "researcher_complex"
-description = "Recherche complexe en lecture seule : synthèse de sources contradictoires pour une décision technique importante."
+description = "Recherche complexe en lecture seule : synthèse de sources contradictoires pour une décision technique importante. Variante coûteuse : seulement si une capacité Sol est établie au cadrage ou si `researcher` a atteint une limite constatée."
 
 model = "gpt-6.1-sol"
 model_reasoning_effort = "xhigh"
@@ -33,6 +33,12 @@ RAPPORT :
 1. Réponse directe à la question
 2. Sources (URL) et versions concernées
 3. Incertitudes, contradictions entre sources, angles morts
+
+Retour : associe chaque critère identifié à « vérifié » ou « non vérifié », avec sa
+source (URL, date, version) ; signale la limite atteinte (requêtes épuisées) et
+les angles morts : une limite n'établit jamais une conformité implicite. Ton
+rapport entre dans le contexte de la racine : environ 400 mots, sources avec URL,
+date et version, aucun long extrait.
 """
 
 # Table en fin de fichier : voir la note dans architect.toml.

@@ -35,9 +35,18 @@ du wrapper peut normaliser tout échec à `1`.
 
 RAPPORT :
 1. Commandes exécutées (la commande, pas sa sortie)
-2. Résultat : passe / échoue, code de sortie, fichiers testés et changements depuis le test
+2. Résultat, rapporté séparément : passe / échoue / validation non établie, code
+   de sortie mesuré, périmètre effectivement testé, preuve d'achèvement du
+   runner de tests (résumé final, compteur attendu ou marqueur terminal adapté),
+   exclusions et vérifications non réalisées, changements depuis le test. Un
+   code 0 sans preuve suffisante donne « validation non établie », jamais
+   « non observable » ; aucun marqueur universel n'est imposé. Toute
+   modification ultérieure invalide les preuves qu'elle peut affecter : relance
+   uniquement les vérifications concernées.
 3. Erreur essentielle : 10 lignes maximum, la partie signifiante seulement
 4. Ce que tu as tenté et pourquoi tu t'arrêtes
+5. Critères : chaque critère identifié « vérifié », « échoué » ou « non vérifié »,
+   avec sa preuve (code de sortie et périmètre testé)
 
 Ne joins jamais un log complet. Si tu penses qu'il faut le log entier, cite les
 lignes qui comptent et dis où trouver le reste.

@@ -36,8 +36,18 @@ BORNES : 3 tentatives. Ensuite tu rapportes l'échec — c'est un livrable valid
 RAPPORT :
 1. Ce qui a changé
 2. Fichiers modifiés
-3. Validation effectuée : commande, code de sortie, fichiers testés et modifications ultérieures
-4. Risques restants ou décisions en suspens
+3. Validation, rapportée séparément : commande, code de sortie mesuré, périmètre
+   effectivement testé, preuve d'achèvement du runner de tests (résumé final,
+   compteur attendu ou marqueur terminal adapté), échecs, exclusions et
+   vérifications non réalisées. Un code 0 sans preuve suffisante donne
+   « validation non établie », jamais « non observable » ; aucun marqueur
+   universel n'est imposé. Toute modification ultérieure invalide les preuves
+   qu'elle peut affecter : relance uniquement les vérifications concernées.
+4. Critères : chaque critère identifié « vérifié », « échoué » ou « non vérifié »,
+   avec sa preuve et l'état analysé transmis (n'exécute pas de commande pour
+   l'obtenir)
+5. Risques restants (identifiants stables), décisions en suspens et limite
+   atteinte ; une limite n'établit jamais une conformité implicite
 """
 
 # La racine conserve la responsabilité du routage.

@@ -30,6 +30,12 @@ RAPPORT :
 1. Réponse directe à la question
 2. Sources (URL) et versions concernées
 3. Incertitudes, contradictions entre sources, angles morts
+
+Retour : associe chaque critère identifié à « vérifié » ou « non vérifié », avec sa
+source (URL, date, version) ; signale la limite atteinte (requêtes épuisées) et
+les angles morts : une limite n'établit jamais une conformité implicite. Ton
+rapport entre dans le contexte de la racine : environ 400 mots, sources avec URL,
+date et version, aucun long extrait.
 """
 
 # Table en fin de fichier : voir la note dans architect.toml.
