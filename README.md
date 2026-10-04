@@ -9,7 +9,7 @@ A Codex configuration template that routes work to specialized agents only when 
 Priorities, in order:
 
 1. Preserve result quality and relevance.
-2. Reduce total cost, including coordination and rework.
+2. Reduce total cost in API dollars (tokens of each type times the model's rate, so more tokens on a cheaper tier is a good trade at equal quality), including coordination and rework.
 3. Reduce latency.
 
 Small, bounded tasks stay with the primary agent. Delegation is used when a clearly scoped role can perform substantial work more efficiently or provide useful independent analysis.
@@ -22,17 +22,17 @@ no universal ranking of quality or token consumption.
 
 | Model | Project candidacy | Boundary to preserve |
 |---|---|---|
-| GPT-6 Luna | Bounded work; `high`, `xhigh`, and `max` are candidates, including well-defined implementation or framing | User floor `high` in named roles and the generic agent. A low token price does not establish lower token consumption. |
-| GPT-6 Sol | Ordinary candidate for technical missions and complex interactions, independently of role | Same quality gate and comparison protocol as Sol 6.1; no extra proof required because of its age. |
-| GPT-5.6 Sol | Ordinary candidate for reasoning, framing, and other missions it can fulfill | Same requirements as other Sol models; no compatibility-only exception or presumed inferiority. |
+| GPT-6 Luna | Bounded work; `high`, `xhigh`, and `max` are candidates, including well-defined implementation or framing | User floor `high` in named roles and the generic agent. About 20x cheaper than Sol 6.1 per token: see the cost rule. |
+| GPT-6 Sol | Ordinary candidate for technical missions and complex interactions, independently of role | Same quality gate and comparison protocol as Sol 6.1, no proof tied to its age; same rates as 6.1 except cached input, 2x more expensive. |
+| GPT-5.6 Sol | Ordinary candidate for reasoning, framing, and other missions it can fulfill | Same requirements as other Sol models; no compatibility-only exception or presumed inferiority; rate is 2x that of 6.1 (promotional, see the cost rule). |
 | GPT-6.1 Sol | Candidate across implementation, research, and decisions | Being newer establishes neither fewer tokens nor an optimal replacement for other Sol models. |
-| GPT-6 Astra | An `architect` consultation when extra capacity addresses an identified difficulty | Preserve quota and architect restrictions: no exploration, commands, writing, or delegation. |
+| GPT-6 Astra | An `architect` consultation when extra capacity addresses an identified difficulty | Preserve quota and architect restrictions: no exploration, commands, writing, or delegation. 5x the 6.1 rate (10x cached), 100x Luna. |
 
 Verify the models and efforts actually available in the runtime. API support
 does not establish Codex availability. Effort names are not equivalent across
 models: Luna `xhigh` does not mean Sol `medium`, nor Sol `xhigh` Astra `low`.
 
-## Choose capacity, then token efficiency
+## Choose capacity, then cost
 
 Choose model and effort from contract ambiguity, dependencies and interactions,
 contradictions, validation difficulty, and consequences of error. Batch length,
@@ -42,12 +42,12 @@ exploration before the routing decision.
 
 1. **Capacity**: identify admissible combinations that can meet the same quality
    and relevance criteria, with validation appropriate to the consequences of
-   error. Exclude a combination for an identified limit, not its age or price.
-   Keep decisive uncertainty explicit.
-2. **Efficiency**: among admissible combinations, compare whole-job tokens,
-   including root, children, and reviewers, then monetary cost and latency
-   separately. Without comparable measurements, the choice remains a policy
-   hypothesis, not demonstrated savings or an optimum.
+   error. Exclude a combination for an identified limit, not its age; price
+   enters the cost, not admissibility. Keep decisive uncertainty explicit.
+2. **Cost**: among admissible combinations, compare whole-job cost (rates
+   below), including root, children, and reviewers, then latency. Tokens are
+   reported without arbitrating. Without comparable measurements, the choice
+   remains a policy hypothesis, not demonstrated savings or an optimum.
 
 The grid proposes candidates to evaluate. Each Sol means GPT-6 Sol, GPT-5.6
 Sol, and GPT-6.1 Sol under the same admission criteria. Proposed efforts remain
@@ -64,12 +64,14 @@ conditional on their actual availability.
 `xhigh` and `max` are candidates to compare, not automatic promotions. Neither
 a researcher role nor low pricing selects `max` automatically. Evaluating `max`
 does not require exhausting all lower efforts first: justify candidacy from
-the task, then measure quality and whole-job tokens. Luna fallbacks are `high`,
+the task, then measure quality and whole-job cost. Luna fallbacks are `high`,
 including runner and generic; this provisional policy respects the user floor
 without establishing that `high` is optimal. Existing fallback models stay in
 place; TOML values and successful execution do not prove savings. The optional
 scout_complex and researcher_complex profiles are runtime conveniences, not a
-mandatory ranking.
+mandatory ranking: the standard variant (Luna) is the default; the complex one
+(Sol 6.1 xhigh, 20x per token and longer reasoning) requires capacity
+established at framing or an observed limit of the standard variant.
 
 At launch, record role, exact model, effort, supporting facts, hypotheses,
 unknowns, expected validation, and reclassification trigger. Use explicit
@@ -77,14 +79,49 @@ overrides and `fork_turns = "none"` only where supported. If the runtime locks
 the profile, choose an available profile preserving its contract and restrictions;
 otherwise retain the task at the root and disclose the unsupported combination.
 A generic fits only if those guarantees can be preserved. Prompt instructions
-do not replace disabled tools. Never claim an unapplied override. Astra uses
-a verifiable architect profile exclusively. Preserve the user's primary model
-and effort; the Luna floor applies to subagent selections.
+do not replace disabled tools. Never claim an unapplied override. An Astra
+subagent consultation uses a verifiable architect profile exclusively. Preserve
+the user's primary model and effort; the Luna floor applies to subagent
+selections.
 
 The child reports facts invalidating the initial selection; only the root
 reclassifies. Execution difficulty does not automatically justify more capacity.
 Reuse relevant evidence and validation instead of repeating work. Report a
 decisive conceptual difficulty immediately.
+
+### API prices and cost rule
+
+Standard rates (input <= 272K tokens), dollars per million tokens, retrieved
+2026-10-03 from https://developers.openai.com/api/docs/pricing (the page carries
+no version: refresh before comparing runs dated otherwise).
+
+| Model | Input | Cached input | Cache write | Output (reasoning included) | Output vs Luna |
+|---|---|---|---|---|---|
+| GPT-6 Luna | 0.10 | 0.01 | 0.125 | 0.50 | 1x |
+| GPT-6 Sol | 2.00 | 0.20 | 2.50 | 10.00 | 20x |
+| GPT-6.1 Sol | 2.00 | 0.10 | 2.50 | 10.00 | 20x |
+| GPT-5.6 Sol | 4.00 | 0.40 | 5.00 | 20.00 | 40x |
+| GPT-6 Astra | 10.00 | 1.00 | 12.50 | 50.00 | 100x |
+
+GPT-5.6 Sol's rate is promotional at least through November 21, 2026. Above 272K
+input tokens a request pays input, cached input, and cache writes at 2x and
+output at 1.5x for the whole request. Fast is 2x, Batch and Flex 0.5x (Ultrafast
+6x, Astra only): compare at the same service tier, since logs do not record it.
+An input token is billed as uncached, cached, or cache write, never cumulatively.
+
+Cost rule: at equal admissible capacity, compare the sum of tokens x rate, not
+tokens. Luna stays cheaper than Sol 6.1 while it consumes fewer than 20x (input,
+output) or 10x (cached) the tokens. Trying a cheaper tier first pays off when
+cost_low + (1 - p) x cost_high < cost_high, that is p > cost_low / cost_high,
+where p is the probability that the low tier suffices and that its insufficiency
+is detected before delivery: without verifiable criteria (return contract), an
+undetected error cannot be recovered and this calculation does not apply.
+Escalate on an identified capacity limit, not as a precaution. Sol 6 (cached 2x)
+and Sol 5.6 (2x the 6.1 rate, 4x cached) win only through measured lower
+consumption: under half the 6.1 tokens for 5.6, at equal quality. Keeping the
+root context under 272K is a benefit of delegation; a full fork to another model
+restarts without cache and may cross the threshold. Astra remains a quota
+constraint on top of cost.
 
 ### Official sources and limits
 
@@ -100,14 +137,14 @@ The model pages position Luna for narrow work, Sol 6.1 for complex work, and
 Astra for demanding tasks. The selection guide recommends testing candidates
 on the same inputs and retaining a setting that meets the quality bar. Sol 6
 pointing to 6.1 does not establish fewer tokens in this repository. API prices
-and external evaluations do not demonstrate project token savings. The Luna
-high floor is a user preference separate from documentation examples. The
+ground the cost calculation; neither they nor external evaluations demonstrate
+project savings, which remain to be measured. The Luna high floor is a user preference separate from documentation examples. The
 grid remains a hypothesis to validate, not a comparative recommendation proven
 by these sources.
 
-## Measure tokens, price, and quality separately
+## Measure cost without conflating tokens, price, and quality
 
-This revision measures no savings or token reduction. A comparison requires
+This revision measures no savings. A comparison requires
 the same tasks, acceptance criteria, supplied context, tools and permissions,
 validation, and attempt budget. Identify every run, task, scenario, effective
 model/effort, arm, and repetition; pair runs and randomize candidate order.
@@ -123,11 +160,16 @@ including root, children, and reviewers. Tool calls contribute their model
 exchange tokens; do not add their text again to usage counters. When `Reasoning`
 is included in `Output`, total is `Input + Output`, not `Input + Output + Reasoning`.
 When `Cached` is included in `Input`, do not add it again; distinguish
-`Uncached = Input - Cached`. Verify these inclusions in the counter source.
+`Uncached = Input - Cached`. Cache writes are a third input type, billed apart.
+Verify these inclusions in the counter source.
 
-Report total and component tokens, monetary cost using dated model-specific
-rates, latency, quality, and success rate separately. Codex credits are not API
-dollars. Include complete successes and failures, corrections, and reruns under
+The criterion is API dollars per accepted result: the sum over responses of
+tokens of each type times the model's dated rate (long-context and service-tier
+multipliers included), successes, failures, and reruns included; per complete
+run when no quality verdict exists. Report total and component tokens, latency,
+quality, and success rate separately. Codex credits are not API dollars: the API
+rate is a proxy for a subscription, and the Astra quota remains a separate
+constraint. Include complete successes and failures, corrections, and reruns under
 a rule fixed before execution; do not compare survivors alone. A complete
 failure remains observable. A run with `Complete = false` is exactly
 `non observable`: exclude its tokens and duration from all ratios, medians, and
@@ -147,9 +189,9 @@ with warnings; review them explicitly if they conflict with the Luna floor.
 | --- | --- | --- | --- |
 | Primary | User-selected | Variable | Triage, decisions, integration, and small local tasks |
 | `scout` | `gpt-6-luna` | `high` | Read-only codebase and log exploration |
-| `scout_complex` (optional) | `gpt-6.1-sol` | `xhigh` | Resolve contradictory evidence across components |
+| `scout_complex` (optional) | `gpt-6.1-sol` | `xhigh` | Complex causal investigation or review once Sol-level capacity is established (`scout` is the default) |
 | `researcher` | `gpt-6-luna` | `high` | Multi-source external research |
-| `researcher_complex` (optional) | `gpt-6.1-sol` | `xhigh` | Synthesize conflicting sources for an important technical decision |
+| `researcher_complex` (optional) | `gpt-6.1-sol` | `xhigh` | Synthesize conflicting sources for an important technical decision (`researcher` is the default) |
 | `runner` | `gpt-6-luna` | `high` | Long validations and large mechanical batches |
 | `builder` | `gpt-6.1-sol` | `high` | Substantial implementation with targeted validation |
 | `strategist` | `gpt-6.1-sol` | `medium` | Complex framing, decomposition, and intermediate tradeoffs |
@@ -189,11 +231,12 @@ with warnings; review them explicitly if they conflict with the Luna floor.
 - `.codex/agents/*.toml` defines each role's model, tools, limits, and reporting contract.
 - `.agents/plugins/marketplace.json` exposes the repository's Codex catalog.
 - `plugins/codexskills/` contains the manifest, both skills, the controlled installer, and the complete profiles distributed as templates.
+- The measurement tooling behind the numbers quoted below (dated price table, per-response usage exporter, paired-run harness) is local and not versioned. `fixtures/release_0_8_0/` keeps the authentic 0.8.0 files that the installer tests migrate from.
 
 ## Install as a plugin
 
 > [!IMPORTANT]
-> Current plugin version: **0.8.0**.
+> Current plugin version: **0.8.1**.
 >
 > An approved repository marketplace installs the plugin by default. Codex
 > still asks you to trust its bundled SessionStart hook once. That hook then
@@ -308,3 +351,80 @@ Codex discovers repository instructions from `AGENTS.md`, local skills from `.ag
 Edit `.codex/config.toml` to change the primary model, defaults, or concurrency. Edit the matching file under `.codex/agents/` to change a role. Keep the role boundaries and model names synchronized with `AGENTS.md` and `quota-orchestrator/SKILL.md`.
 
 Model availability depends on your Codex account and environment.
+
+## Measured overhead and the lean hot path
+
+A first paired benchmark (15 runs, Astra root, cold cache, run with a local
+harness that is not versioned) showed that the previous routing cost more than the root
+alone on every task of that size. Reading a 32 KB skill at the start of every task
+(its description said "apply automatically") plus an 11 KB `AGENTS.md` added about
+$0.2 per run: the run that only executes the test suite cost $0.12 alone and
+$0.33 routed. Every coordination request (spawn, wait, list, message) re-reads
+about 30K cached tokens at the root's rate, while the scout itself cost under
+$0.01 (Luna): the bill is the root's. These are single-repetition observations,
+not a demonstrated result.
+
+The routing path was therefore reduced, and the effect is predicted, not yet
+measured:
+
+- `AGENTS.md` (about 5 KB) carries everything everyday triage and standard
+  delegation need: what stays at the root, when `scout`, `researcher`, `runner`
+  or `builder` apply, a short handoff, a single long `wait_agent`, and targeted
+  acceptance reads (a wider re-read is a redo and cancels the substitution).
+- The skill is read on demand only: model or effort outside the profiles,
+  `_complex` variants, `strategist`, `architect`, independent review, cost
+  measurement, or a missing profile. Its description no longer says
+  "automatically" or "every task", and `AGENTS.md` stays under 6 KB because it
+  is paid on every request of every agent.
+- A `scout` is worth its coordination only for a wide exploration (about eight
+  files or 60 KB; provisional threshold, to calibrate); smaller reviews and
+  traces stay at the root.
+- Waiting for a child is configured, not only requested. A wide audit run (T6) showed the root
+  polling with `wait_agent` every 60 seconds, four times, although the instruction asked for one
+  long wait: each poll is a full root request, together a quarter of the root's cost. `config.toml`
+  now carries `[features.multi_agent_v2]` with a five-minute floor (`min_wait_timeout_ms` and
+  `default_wait_timeout_ms` at 300000, `max_wait_timeout_ms` at 3600000), and `AGENTS.md` names the
+  value. `wait_agent` still returns as soon as the child answers, so the floor removes polls, not
+  progress. Codex refuses to load a configuration unless `min <= default <= max`, so the installer
+  adds the three keys only as a group, only when the user has none of them, and never when the user
+  already defines `multi_agent_v2` another way (a boolean flag, an inline table); it then says why.
+- Scout and researcher reports are capped at about 400 words, because they enter
+  the root's context at the root's rate. Review mode also checks edge cases (empty
+  input, `None` or zero, bounds, division, swallowed errors) after both delegated
+  reviews of the benchmark missed an empty-list defect that the root alone found.
+
+## 0.8.1 contracts and distribution
+
+Cost is the criterion: API dollars per accepted result, computed per response
+from the dated API prices (cache, cache writes, the long-context surcharge above 272K
+input tokens, and the service tier). More tokens on a cheaper tier is a good
+trade; a candidate that costs less passes the measurement gate even if it uses
+more tokens. Keep the price tables in both skills and both READMEs equal to
+each other and to the dated prices they cite.
+
+Delegation transfers execution, not responsibility for closure. Each criterion
+returns verified, failed, or not verified, with evidence and analyzed state;
+the root reconciles the results, examines the final diff and performs necessary
+acceptance checks. Builder/runner require test-runner completion evidence in
+addition to exit code; code 0 alone means validation not established. Scout
+distinguishes causal investigation (the default) from review of all assigned
+axes. Architect restrictions apply to the consultant, not a user-selected Astra
+root; announced model, configuration and attested execution are distinct.
+Independent review remains conditional, with an explicit root decision when a
+listed risk is affected.
+
+Distribution reference: `plugins/codexskills/templates/AGENTS.md`,
+`templates/.codex/config.toml`, `templates/.codex/agents/*.toml`, and
+`templates/.agents/skills/quota-orchestrator/SKILL.md` (under `plugins/codexskills/`).
+Update their root copies together with the English skill and fallbacks in
+`plugins/codexskills/skills/quota-orchestrator/SKILL.md`, both installers
+`install.py` and `plugins/codexskills/scripts/install.py`, the plugin manifest,
+and French/English READMEs. Local copies and templates must match after
+line-ending normalization.
+
+Authentic 0.8.0 contents, raw and normalized fingerprints, and the managed
+AGENTS block are preserved in `fixtures/release_0_8_0/`. Official profiles migrate
+with backups; customizations remain intact with warnings. Update the installed
+package, then open a new task. SessionStart reconciles only that installed
+package, without downloads or runtime mission validation. Plugin consistency
+is tested; model compliance with the contracts is not automatically guaranteed.
