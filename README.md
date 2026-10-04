@@ -377,8 +377,9 @@ measured:
   "automatically" or "every task", and `AGENTS.md` stays under 6 KB because it
   is paid on every request of every agent.
 - A `scout` is worth its coordination only for a wide exploration (about eight
-  files or 60 KB; provisional threshold, to calibrate); smaller reviews and
-  traces stay at the root.
+  files or 60 KB; measured to pay for an exhaustive read-only audit: 34 %, 41 %
+  and 42 % cheaper at 8, 16 and 48 files, with a latency 2.5 to 3.5 times
+  longer); smaller reviews and traces stay at the root.
 - Waiting for a child is configured, not only requested. A wide audit run (T6) showed the root
   polling with `wait_agent` every 60 seconds, four times, although the instruction asked for one
   long wait: each poll is a full root request, together a quarter of the root's cost. `config.toml`

@@ -45,7 +45,7 @@ Ne pas compter les opérations pour déclencher une délégation.
 |---|---|
 | Petit travail local, lot déterministe borné ou implémentation locale au contrat explicite | Racine : lecture, modification et validation |
 | Point d'entrée connu et vérification directe ou commande déterministe bornée | Racine |
-| Point d'entrée inconnu, traçage transversal ou hypothèses causales concurrentes, avec une exploration assez large pour dépasser la coordination (environ huit fichiers ou 60 Ko ; seuil provisoire) | `scout` ; sinon racine |
+| Point d'entrée inconnu, traçage transversal ou hypothèses causales concurrentes, avec une exploration assez large pour dépasser la coordination (environ huit fichiers ou 60 Ko ; mesuré rentable pour un audit en lecture seule) | `scout` ; sinon racine |
 | Revue bornée assez large (plusieurs axes, même seuil) pour amortir la coordination | `scout`, mode revue bornée ; sinon racine |
 | Validation assez longue et indépendante pour amortir la coordination | `runner` |
 | Implémentation substantielle ou indépendante dont la délégation est amortie | `builder`, validation ciblée comprise |

@@ -57,7 +57,7 @@ routing decision.
 | Situation | Route after setup |
 |---|---|
 | Small local task, direct read, or bounded deterministic batch | Root |
-| Unknown entry point, cross-component flow, or competing causal hypotheses, with an exploration wide enough to exceed coordination (about eight files or 60 KB; provisional threshold) | `scout`; otherwise root |
+| Unknown entry point, cross-component flow, or competing causal hypotheses, with an exploration wide enough to exceed coordination (about eight files or 60 KB; measured to pay for a read-only audit) | `scout`; otherwise root |
 | Bounded review wide enough (several axes, same threshold) to amortize coordination | `scout` in bounded-review mode; otherwise root |
 | External research with multiple questions or sources | `researcher` |
 | Long independent validation | `runner` |

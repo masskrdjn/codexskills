@@ -27,8 +27,8 @@ Déléguer seulement dans ces cas :
 - `scout` (Luna ; `scout_complex` seulement pour une capacité Sol établie au
   cadrage) : point d'entrée à découvrir ou chaîne à tracer entre composants, avec
   une exploration confiée assez large pour dépasser la coordination (environ huit
-  fichiers ou 60 Ko de source à lire ; seuil provisoire, à calibrer) et une
-  réponse qui tient en quelques lignes `chemin:ligne`.
+  fichiers ou 60 Ko de source à lire ; mesuré rentable pour un audit en lecture
+  seule) et une réponse qui tient en quelques lignes `chemin:ligne`.
 - `researcher` : toute recherche documentaire à plusieurs questions ou sources.
   Le seuil se décide avant la première recherche : dès qu'une deuxième requête,
   source ou question devient nécessaire, arrêter et créer `researcher`, puis

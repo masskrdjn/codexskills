@@ -392,8 +392,10 @@ Le chemin de routage a donc été réduit ; l'effet est prédit, pas encore mesu
   « chaque tâche », et `AGENTS.md` reste sous 6 Ko car il est payé à chaque
   requête de chaque agent.
 - Un `scout` ne rentabilise sa coordination que pour une exploration large
-  (environ huit fichiers ou 60 Ko ; seuil provisoire, à calibrer) ; les revues et
-  traçages plus petits restent à la racine.
+  (environ huit fichiers ou 60 Ko ; mesuré rentable pour un audit exhaustif en
+  lecture seule : 34 %, 41 % et 42 % moins cher à 8, 16 et 48 fichiers, pour une
+  latence 2,5 à 3,5 fois plus longue) ; les revues et traçages plus petits
+  restent à la racine.
 - L'attente d'un enfant est configurée, pas seulement demandée. Un run d'audit large (T6) a
   montré la racine sondant avec `wait_agent` toutes les 60 secondes, quatre fois, alors que
   l'instruction demandait une seule attente longue : chaque sondage est une requête racine complète,
