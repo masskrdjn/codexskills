@@ -68,6 +68,12 @@ RELEASE_0_8_SHA256 = {
     ".agents/skills/quota-orchestrator/SKILL.md": "9724896967c1861c03fa87c3930260d1fe5f368244a283fddae35a7aedd80735",
 }
 RELEASE_0_8_AGENTS_BLOCK_SHA256 = "780fbcfa4a6dac1eca2d01c15ee83c9944b436a4c4ed846a490ae4864ab1c670"
+# 0.8.1 as first published (b6d823d); 443ab80 then changed these two files under the same version.
+RELEASE_0_8_1_SHA256 = {
+    "AGENTS.md": "555118857e37ac24f433b479412f8b652d9a59563300c0b3058499d75248832c",
+    ".agents/skills/quota-orchestrator/SKILL.md": "d240146e364cc7bb6ef5a3bd1ffac9755172a1237e402e0917bed2d99addcf55",
+}
+RELEASE_0_8_1_AGENTS_BLOCK_SHA256 = "d0d2c469abe122649756c7d782e5ea6254f93122ce410ef63fd70a94fd5c2092"
 RELEASE_0_7_AGENTS_BLOCK_SHA256 = "ed3a2cef5b69b266d417e970e8ef2533cd4a400eb121b34e8c537fa425888d91"
 LEGACY_AGENTS_BLOCK_SHA256 = "cead871fee8a8ae0179552d16770ab0344d7869de9d24c3fdbc58ef1cf4c86e5"
 RELEASE_0_5_AGENTS_BLOCK_SHA256 = "290aa11f0c6a6fd45c0a013b85a9bd11b488d1fc4c7412b63c2c64a18a7d0ec9"
@@ -112,6 +118,7 @@ def _is_legacy(path: str, content: bytes) -> bool:
         RELEASE_0_5_SHA256.get(path),
         RELEASE_0_7_SHA256.get(path),
         RELEASE_0_8_SHA256.get(path),
+        RELEASE_0_8_1_SHA256.get(path),
     )
 
 
@@ -295,7 +302,7 @@ def _merge_agents(source: bytes, target: bytes, path: Path) -> tuple[bytes, list
         end = target_text.index(END, start)
         old_block = target_text[start:end].strip("\r\n").replace("\r\n", "\n")
         old_digest = hashlib.sha256(old_block.encode("utf-8")).hexdigest()
-        if old_digest in (LEGACY_AGENTS_BLOCK_SHA256, RELEASE_0_5_AGENTS_BLOCK_SHA256, RELEASE_0_7_AGENTS_BLOCK_SHA256, RELEASE_0_8_AGENTS_BLOCK_SHA256):
+        if old_digest in (LEGACY_AGENTS_BLOCK_SHA256, RELEASE_0_5_AGENTS_BLOCK_SHA256, RELEASE_0_7_AGENTS_BLOCK_SHA256, RELEASE_0_8_AGENTS_BLOCK_SHA256, RELEASE_0_8_1_AGENTS_BLOCK_SHA256):
             merged = target_text[:start] + newline + block + newline + target_text[end:]
             return _encode(merged, bom), []
         return target, [f"{path}: bloc codexskills existant conservé car il diffère de la source"]
