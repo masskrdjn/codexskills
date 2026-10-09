@@ -54,6 +54,14 @@ A bounded triage may inventory relevant files or symbols. It must not trace
 callers, open multiple implementations, or test causal hypotheses before the
 routing decision.
 
+Before spawning any child, compare its model and reasoning effort, as set by
+the profile, applied overrides, or inheritance, with the primary agent's.
+If both values are identical, keep the work at the root. This rule takes
+precedence over every route below, including `researcher`, `_complex` variants,
+capacity, quality, or latency needs, and independent reviews. A different role
+is insufficient; do not artificially change the model or effort to bypass
+this rule.
+
 | Situation | Route after setup |
 |---|---|
 | Small local task, direct read, or bounded deterministic batch | Root |
@@ -66,7 +74,8 @@ routing decision.
 | Exceptional conceptual decision | `architect` |
 
 A one-off lookup using one source stays at the root. As soon as a second query,
-source, or question is needed, create the researcher before continuing.
+source, or question is needed, create the researcher before continuing if its
+model/effort pair differs from the root's; otherwise do the research at the root.
 
 Create the scout immediately when, beyond the exploration threshold above, the
 entry point must be discovered, callers, data, or state must be traced across

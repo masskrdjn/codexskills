@@ -19,9 +19,12 @@ ni tester d'hypothèse.
 Reste à la racine, sans annonce et sans lire le skill : petite tâche locale, lot
 déterministe borné (validation, renommage), implémentation locale au contrat
 explicite, consultation documentaire à une seule source, recherche de cause dont
-le point d'entrée est connu et la vérification directe. Chaque enfant ajoute une
-coordination (transmission, attente, intégration, plusieurs requêtes racine à
-tarif complet) que le travail confié doit nettement dépasser.
+le point d'entrée est connu et la vérification directe.
+Le travail confié doit amortir la coordination de chaque enfant, y compris les
+requêtes racine à tarif complet.
+
+Même modèle et même effort que la racine : rester à la racine, quel que soit
+le rôle ou le motif. Cette règle prime sur tout routage.
 
 Déléguer seulement dans ces cas :
 - `scout` (Luna ; `scout_complex` seulement pour une capacité Sol établie au

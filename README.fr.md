@@ -14,6 +14,12 @@ Priorités, dans l’ordre :
 
 Les petites tâches bornées restent à l’agent principal. La délégation est utilisée lorsqu’un rôle clairement défini peut effectuer un travail substantiel plus efficacement ou fournir une analyse indépendante utile.
 
+Si le sous-agent utiliserait le même modèle et le même niveau de raisonnement
+que l’agent principal, le travail reste à l’agent principal. Cette règle prévaut
+sur tous les critères de délégation, y compris les revues indépendantes ;
+changer de rôle ne suffit pas et les paramètres ne doivent pas être modifiés
+artificiellement pour la contourner.
+
 ## Comparer les modèles indépendamment des rôles
 
 Les rôles définissent les missions, restrictions et livrables. Ils ne classent

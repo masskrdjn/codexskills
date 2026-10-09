@@ -41,6 +41,15 @@ inventorier les fichiers ou symboles pertinents, mais ne suit pas les
 appelants, n'ouvre pas plusieurs implémentations et ne teste pas d'hypothèse.
 Ne pas compter les opérations pour déclencher une délégation.
 
+Avant toute création, comparer le couple modèle/niveau de raisonnement de
+l'enfant, prévu par le profil, les overrides appliqués ou l'héritage, à celui
+de l'agent principal. Si les deux valeurs sont identiques, la racine réalise
+elle-même le travail. Cette règle prévaut sur tous les routages ci-dessous,
+y compris `researcher`, les variantes `_complex`, les besoins de capacité,
+de qualité ou de délai et les revues indépendantes. Un rôle différent ne
+suffit pas ; ne pas changer artificiellement le modèle ou l'effort pour
+contourner cette règle.
+
 | Situation | Chemin normal |
 |---|---|
 | Petit travail local, lot déterministe borné ou implémentation locale au contrat explicite | Racine : lecture, modification et validation |
@@ -55,8 +64,9 @@ Ne pas compter les opérations pour déclencher une délégation.
 | Intégration finale et décision de routage | Racine |
 | Arbitrage technique difficile, ou décision structurante coûteuse à corriger nécessitant un avis expert | `architect` |
 
-Le routage `researcher` est impératif : créer ce sous-agent avant toute
-consultation ou attente, vérifier qu'un identifiant actif a été retourné, puis
+Si le couple modèle/effort diffère, le routage `researcher` est impératif :
+créer ce sous-agent avant toute consultation ou attente,
+vérifier qu'un identifiant actif a été retourné, puis
 l'attendre. La racine ne réalise pas elle-même la recherche documentaire
 multiple et n'appelle jamais `wait` sans enfant actif.
 Le seuil se décide avant la première recherche, pas après : une consultation
@@ -113,7 +123,8 @@ est alors annoncée comme telle et non comme une économie.
 
 Choisir le rôle selon la mission et ses restrictions, puis le couple modèle/effort
 selon la capacité puis le coût complet, lorsque la coordination est amortie.
-La capacité de la racine à faire le travail elle-même n'interdit pas de déléguer.
+Si le couple modèle/effort diffère, la capacité de la racine à faire le travail
+elle-même n'interdit pas de déléguer.
 Une petite modification risquée peut demander une revue indépendante ; le
 nombre de fichiers ne détermine ni le niveau nécessaire ni la rentabilité.
 Si une ambiguïté décisive dépasse le rôle choisi, la racine garde cet arbitrage et

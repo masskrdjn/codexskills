@@ -74,6 +74,12 @@ RELEASE_0_8_1_SHA256 = {
     ".agents/skills/quota-orchestrator/SKILL.md": "d240146e364cc7bb6ef5a3bd1ffac9755172a1237e402e0917bed2d99addcf55",
 }
 RELEASE_0_8_1_AGENTS_BLOCK_SHA256 = "d0d2c469abe122649756c7d782e5ea6254f93122ce410ef63fd70a94fd5c2092"
+# Exact files before the same-model/same-effort delegation guard.
+RELEASE_0_8_2_SHA256 = {
+    "AGENTS.md": "a244b34a792eab979a40e37cc59fb979125e220169069ca1a9c5b29a7df201fa",
+    ".agents/skills/quota-orchestrator/SKILL.md": "0cdd8d29317adb9d39a436fa29e0063d87117633d263e237e09924171223586e",
+}
+RELEASE_0_8_2_AGENTS_BLOCK_SHA256 = "4bf6850b48660ff3bbde9594c770e142f406ed7d89be41a8bbbed1b7efb0a619"
 RELEASE_0_7_AGENTS_BLOCK_SHA256 = "ed3a2cef5b69b266d417e970e8ef2533cd4a400eb121b34e8c537fa425888d91"
 LEGACY_AGENTS_BLOCK_SHA256 = "cead871fee8a8ae0179552d16770ab0344d7869de9d24c3fdbc58ef1cf4c86e5"
 RELEASE_0_5_AGENTS_BLOCK_SHA256 = "290aa11f0c6a6fd45c0a013b85a9bd11b488d1fc4c7412b63c2c64a18a7d0ec9"
@@ -119,6 +125,7 @@ def _is_legacy(path: str, content: bytes) -> bool:
         RELEASE_0_7_SHA256.get(path),
         RELEASE_0_8_SHA256.get(path),
         RELEASE_0_8_1_SHA256.get(path),
+        RELEASE_0_8_2_SHA256.get(path),
     )
 
 
@@ -302,7 +309,7 @@ def _merge_agents(source: bytes, target: bytes, path: Path) -> tuple[bytes, list
         end = target_text.index(END, start)
         old_block = target_text[start:end].strip("\r\n").replace("\r\n", "\n")
         old_digest = hashlib.sha256(old_block.encode("utf-8")).hexdigest()
-        if old_digest in (LEGACY_AGENTS_BLOCK_SHA256, RELEASE_0_5_AGENTS_BLOCK_SHA256, RELEASE_0_7_AGENTS_BLOCK_SHA256, RELEASE_0_8_AGENTS_BLOCK_SHA256, RELEASE_0_8_1_AGENTS_BLOCK_SHA256):
+        if old_digest in (LEGACY_AGENTS_BLOCK_SHA256, RELEASE_0_5_AGENTS_BLOCK_SHA256, RELEASE_0_7_AGENTS_BLOCK_SHA256, RELEASE_0_8_AGENTS_BLOCK_SHA256, RELEASE_0_8_1_AGENTS_BLOCK_SHA256, RELEASE_0_8_2_AGENTS_BLOCK_SHA256):
             merged = target_text[:start] + newline + block + newline + target_text[end:]
             return _encode(merged, bom), []
         return target, [f"{path}: bloc codexskills existant conservé car il diffère de la source"]

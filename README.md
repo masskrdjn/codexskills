@@ -14,6 +14,11 @@ Priorities, in order:
 
 Small, bounded tasks stay with the primary agent. Delegation is used when a clearly scoped role can perform substantial work more efficiently or provide useful independent analysis.
 
+If a child would use the same model and reasoning effort as the primary agent,
+the work stays with the primary agent. This rule takes precedence over all
+delegation criteria, including independent reviews; a different role is
+insufficient, and settings must not be artificially changed to bypass it.
+
 ## Compare models independently of roles
 
 Roles define missions, restrictions, and deliverables. They do not rank models
