@@ -1,6 +1,6 @@
 ---
 name: quota-orchestrator
-description: Protocole pour choisir un modèle ou un effort hors des profils, une variante _complex, strategist, une consultation architect, une revue indépendante ou une mesure de coût. Ne pas lire pour une tâche locale ni pour déléguer à scout, researcher, runner ou builder standard : AGENTS.md suffit. Jamais dans un sous-agent déjà mandaté.
+description: Protocole pour choisir un modèle ou un effort hors des profils, une variante _complex, strategist, une consultation architect, une revue indépendante ou une mesure de coût. Ne pas lire pour une tâche locale ni pour déléguer à scout, researcher, runner, builder_luna ou builder standard : AGENTS.md suffit. Jamais dans un sous-agent déjà mandaté.
 ---
 
 # Routage sélectif
@@ -57,7 +57,8 @@ contourner cette règle.
 | Point d'entrée inconnu, traçage transversal ou hypothèses causales concurrentes, avec une exploration assez large pour dépasser la coordination (environ huit fichiers ou 60 Ko ; mesuré rentable pour un audit en lecture seule) | `scout` ; sinon racine |
 | Revue bornée assez large (plusieurs axes, même seuil) pour amortir la coordination | `scout`, mode revue bornée ; sinon racine |
 | Validation assez longue et indépendante pour amortir la coordination | `runner` |
-| Implémentation substantielle ou indépendante dont la délégation est amortie | `builder`, validation ciblée comprise |
+| Implémentation substantielle entièrement spécifiée, avec validation fiable | `builder_luna` (Luna Max) |
+| Implémentation exigeant conception, arbitrage ou intégration | `builder`, validation ciblée comprise |
 | Consultation documentaire ponctuelle | Racine directement |
 | Recherche documentaire à plusieurs questions ou sources | `researcher` |
 | Cadrage complexe, décomposition ou arbitrage intermédiaire sur contexte assemblé | `strategist` |
@@ -404,21 +405,21 @@ complexe ne requiert pas de contradictions déjà connues, mais une capacité So
 ## Cadrage Strategist
 
 Le rôle `strategist` intervient uniquement lorsque le contexte utile est déjà
-assemblé mais que le quoi-faire reste trop ambigu pour `builder`. Il prépare
+assemblé mais que le quoi-faire reste trop ambigu pour un builder. Il prépare
 une décision ou un plan : missions, ordre, dépendances, contrats, critères
 d'acceptation, alternatives et conditions de révision. Il n'explore pas,
 n'exécute rien, n'écrit rien et ne lance aucun agent ; la racine conserve
 l'orchestration effective et l'intégration.
 
 Ne pas rendre ce passage obligatoire. Une implémentation dont le contrat est
-explicite va directement à `builder`. Une mesure ciblée va au rôle approprié
+explicite va directement à `builder_luna`. Une mesure ciblée va au rôle approprié
 plutôt qu'à `strategist`. Le strategist ne fait pas de revue après coup et
 n'escalade vers `architect` que si une décision structurante, difficile à
 corriger ou encore contradictoire nécessite réellement Astra.
 
 L'échec est un livrable valide. Garder les bornes des rôles : runner, trois
 cycles correction/test ; environnement, deux tentatives ; scout, trois
-recherches infructueuses ; researcher, cinq requêtes ; builder, trois tentatives.
+recherches infructueuses ; researcher, cinq requêtes ; chaque builder, trois tentatives.
 Deux fois la même erreur impose l'arrêt ou une reclassification avec un signal
 nouveau ; pas de troisième essai identique. Toute relance change le périmètre,
 la spécification ou le niveau pour une raison factuelle. Les problèmes

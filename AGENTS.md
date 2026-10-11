@@ -28,17 +28,17 @@ le rôle ou le motif. Cette règle prime sur tout routage.
 
 Déléguer seulement dans ces cas :
 - `scout` (Luna ; `scout_complex` seulement pour une capacité Sol établie au
-  cadrage) : point d'entrée à découvrir ou chaîne à tracer entre composants, avec
-  une exploration confiée assez large pour dépasser la coordination (environ huit
-  fichiers ou 60 Ko de source à lire ; mesuré rentable pour un audit en lecture
-  seule) et une réponse qui tient en quelques lignes `chemin:ligne`.
+  cadrage) : point d'entrée à découvrir ou chaîne à tracer entre composants, si
+  l'exploration dépasse environ huit fichiers ou 60 Ko (rentable mesuré en lecture
+  seule), avec une réponse en quelques lignes `chemin:ligne`.
 - `researcher` : toute recherche documentaire à plusieurs questions ou sources.
   Le seuil se décide avant la première recherche : dès qu'une deuxième requête,
   source ou question devient nécessaire, arrêter et créer `researcher`, puis
   attendre son identifiant actif ; ne pas requalifier après coup en consultation
   ponctuelle.
-- `runner` : validation assez longue et indépendante ; `builder` : implémentation
-  substantielle ou indépendante, validation ciblée comprise.
+- `runner` : validation longue et indépendante ; `builder_luna` (Luna Max) :
+  code substantiel entièrement spécifié, tests fiables ; `builder` : conception,
+  arbitrage ou intégration.
 
 ## Protocole de délégation
 

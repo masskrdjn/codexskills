@@ -14,13 +14,13 @@ SCRIPT = ROOT / "install.py"
 EXPECTED = [
     Path("AGENTS.md"),
     Path(".codex/config.toml"),
-    *(Path(".codex/agents") / name for name in ("architect.toml", "builder.toml", "researcher.toml", "researcher_complex.toml", "runner.toml", "scout.toml", "scout_complex.toml", "strategist.toml")),
+    *(Path(".codex/agents") / name for name in ("architect.toml", "builder.toml", "builder_luna.toml", "researcher.toml", "researcher_complex.toml", "runner.toml", "scout.toml", "scout_complex.toml", "strategist.toml")),
     Path(".agents/skills/quota-orchestrator/SKILL.md"),
 ]
 GLOBAL_EXPECTED = [
     Path("AGENTS.md"),
     Path("config.toml"),
-    *(Path("agents") / name for name in ("architect.toml", "builder.toml", "researcher.toml", "researcher_complex.toml", "runner.toml", "scout.toml", "scout_complex.toml", "strategist.toml")),
+    *(Path("agents") / name for name in ("architect.toml", "builder.toml", "builder_luna.toml", "researcher.toml", "researcher_complex.toml", "runner.toml", "scout.toml", "scout_complex.toml", "strategist.toml")),
     Path("skills/quota-orchestrator/SKILL.md"),
 ]
 

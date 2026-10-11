@@ -84,8 +84,8 @@ class NativeDelegation(unittest.TestCase):
             home.mkdir()
             cwd.mkdir()
             (home / "agents").mkdir()
-            for name, model in (("builder", PARENT_MODEL), ("researcher", "gpt-6-luna")):
-                effort_line = '' if partial and name == "builder" else 'model_reasoning_effort="high"\n'
+            for name, model, effort in (("builder", PARENT_MODEL, "high"), ("builder_luna", "gpt-6-luna", "max"), ("researcher", "gpt-6-luna", "high")):
+                effort_line = '' if partial and name == "builder" else f'model_reasoning_effort={json.dumps(effort)}\n'
                 (home / f"agents/{name}.toml").write_text(
                     f'name={json.dumps(name)}\ndescription="fixture"\ndeveloper_instructions="Return fixture done."\n'
                     f'model={json.dumps(model)}\n{effort_line}', encoding="utf-8")
@@ -189,7 +189,8 @@ class NativeDelegation(unittest.TestCase):
                     contexts = [json.loads(line)["payload"] for path in transcripts
                                 for line in path.read_text(encoding="utf-8").splitlines()
                                 if json.loads(line).get("type") == "turn_context"]
-                    self.assertTrue(any((context.get("model"), context.get("effort")) == ("gpt-6-luna", "high")
+                    expected_effort = "max" if role == "builder_luna" else "high"
+                    self.assertTrue(any((context.get("model"), context.get("effort")) == ("gpt-6-luna", expected_effort)
                                         for context in contexts), "allowed child's effective model/effort must match the profile")
             finally:
                 server.shutdown()
@@ -200,6 +201,9 @@ class NativeDelegation(unittest.TestCase):
 
     def test_luna_pair_can_create_child(self):
         self.run_case("researcher")
+
+    def test_luna_max_builder_can_create_child(self):
+        self.run_case("builder_luna")
 
     def test_unresolved_profile_is_blocked_before_child_creation(self):
         self.run_case("builder", partial=True)

@@ -39,6 +39,7 @@ if __name__ == "__main__":
         assert first.returncode == 0, first.stderr
         assert "réconcilié" in first.stderr
         assert (home / "agents/architect.toml").is_file()
+        assert (home / "agents/builder_luna.toml").is_file()
         assert (home / "skills/quota-orchestrator/SKILL.md").is_file()
         state = json.loads((data / "reconcile-state.json").read_text(encoding="utf-8"))
         assert state["schema"] == 1
