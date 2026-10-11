@@ -10,6 +10,19 @@
           }
         ]
       }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "(^|[.:])spawn_agent$|^collaborationspawn_agent$|^Agent$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"${PLUGIN_ROOT}/hooks/check_delegation.py\"",
+            "timeout": 10,
+            "statusMessage": "Checking delegation model and effort"
+          }
+        ]
+      }
     ]
   }
 }

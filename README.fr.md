@@ -221,7 +221,7 @@ s'ils contredisent le plancher Luna.
 ├── .agents/plugins/marketplace.json
 ├── plugins/codexskills/
 │   ├── .codex-plugin/plugin.json
-│   ├── hooks/hooks.json, hooks/reconcile.py
+│   ├── hooks/hooks.json, hooks/reconcile.py, hooks/check_delegation.py
 │   ├── skills/
 │   │   ├── quota-orchestrator/SKILL.md
 │   │   └── quota-orchestrator-setup/SKILL.md
@@ -251,7 +251,7 @@ s'ils contredisent le plancher Luna.
 ## Installation comme plugin
 
 > [!IMPORTANT]
-> Version actuelle du plugin : **0.8.3**.
+> Version actuelle du plugin : **0.8.4**.
 >
 > Une marketplace de dépôt approuvée installe le plugin par défaut. Codex
 > demande encore une fois votre confiance pour son hook SessionStart. Ce hook
@@ -289,6 +289,36 @@ marketplace est distinct : le hook applique uniquement la version déjà
 installée et ne télécharge jamais une nouvelle version. Si la commande `python`
 ne lance pas Python 3.11 ou plus, utilisez la configuration manuelle ou rendez
 cet interpréteur disponible avant d'approuver le hook.
+
+Le hook synchrone `PreToolUse` contrôle `spawn_agent` (et son alias `Agent`)
+avant la création. Il refuse un couple modèle/effort identique à celui de la
+racine et les réglages indéterminables. Il lit le modèle actif dans l'événement,
+l'effort dans le dernier `turn_context` correspondant du journal local, et
+les profils dans la configuration globale/projet de confiance. Un profil
+personnalisé doit définir `model` et `model_reasoning_effort` ; ces valeurs
+priment sur celles demandées au lancement. Pour les agents intégrés, les deux
+réglages et `fork_turns = "none"` doivent être explicites. Les valeurs par
+défaut runtime, l'héritage intégral ou non précisé de l'historique, les profils partiels, les définitions contradictoires
+et les contextes absents ou illisibles sont refusés plutôt que devinés. Le
+hook ne modifie jamais le modèle ni l'effort demandés.
+
+Après la mise à jour, examinez et approuvez la nouvelle définition du hook,
+puis ouvrez une nouvelle tâche. Un hook non approuvé ou désactivé ne protège
+pas les délégations. Codex doit prendre en charge l'interception de
+`spawn_agent` par `PreToolUse` : voir la
+[documentation officielle des hooks](https://learn.chatgpt.com/docs/hooks).
+Le format du journal n'est pas une interface stable : un format incompatible
+fait refuser la délégation. Un échec de lancement de Python, un timeout ou un
+chemin runtime qui ignore les hooks échappe à ce contrôle. Ce garde-fou ne
+protège pas d'un agent qui modifierait ou désactiverait sa propre configuration.
+
+Tests de régression locaux :
+`python -m unittest discover -s tests -p '*_test.py'`.
+Définissez `CODEX_GUARD_TEST_BINARY` avec le chemin de l'exécutable Codex pour
+inclure les tests du moteur natif. Ils utilisent un `CODEX_HOME` jetable et
+des réponses simulées sur localhost, sans appel à un vrai modèle. Ils vérifient
+qu'un refus ne crée aucun journal d'enfant et qu'un enfant autorisé utilise
+effectivement le modèle et l'effort attendus.
 
 ## Installation sans plugin
 

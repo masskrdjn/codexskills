@@ -211,7 +211,7 @@ with warnings; review them explicitly if they conflict with the Luna floor.
 ├── .agents/plugins/marketplace.json
 ├── plugins/codexskills/
 │   ├── .codex-plugin/plugin.json
-│   ├── hooks/hooks.json, hooks/reconcile.py
+│   ├── hooks/hooks.json, hooks/reconcile.py, hooks/check_delegation.py
 │   ├── skills/
 │   │   ├── quota-orchestrator/SKILL.md
 │   │   └── quota-orchestrator-setup/SKILL.md
@@ -241,7 +241,7 @@ with warnings; review them explicitly if they conflict with the Luna floor.
 ## Install as a plugin
 
 > [!IMPORTANT]
-> Current plugin version: **0.8.3**.
+> Current plugin version: **0.8.4**.
 >
 > An approved repository marketplace installs the plugin by default. Codex
 > still asks you to trust its bundled SessionStart hook once. That hook then
@@ -277,6 +277,34 @@ hook trust. Updating the marketplace package is separate: the hook applies
 only the version already installed and never fetches a newer one. On systems
 without a `python` command resolving to Python 3.11+, use the manual setup or
 make that interpreter available before trusting the hook.
+
+The bundled synchronous `PreToolUse` hook checks `spawn_agent` (including
+its `Agent` alias) before creation. It denies an identical model/effort pair
+and denies unresolved settings. It reads the active model from the event,
+the effort from the matching latest `turn_context` in the local transcript,
+and custom profiles from trusted global/project configuration. A custom
+profile must specify both `model` and `model_reasoning_effort`; those settings
+take precedence over explicit spawn settings. Built-in agents require both
+settings and `fork_turns = "none"` explicitly. Live defaults, full-history
+or unspecified forks, partial profiles,
+conflicting definitions, or missing/unreadable context are refused rather
+than guessed. The hook never changes the requested model or effort.
+
+Review and trust the new hook definition after updating, then open a new
+task. An untrusted or disabled hook cannot protect delegation. This requires
+a Codex release that intercepts `spawn_agent` through `PreToolUse`; see the
+[official hook documentation](https://learn.chatgpt.com/docs/hooks). The
+transcript format is not a stable interface: an incompatible format refuses
+delegation. A Python launch failure, timeout, or runtime path that skips hooks
+is outside this guard's control. This is a delegation guard, not protection
+against an agent deliberately editing or disabling its own configuration.
+
+Run the offline guard regression suite with
+`python -m unittest discover -s tests -p '*_test.py'`.
+Set `CODEX_GUARD_TEST_BINARY` to the local Codex executable to also run the
+native integration cases. They use a disposable `CODEX_HOME` and loopback
+Responses fixtures, not a real model API. They verify a refused spawn creates
+no child transcript and an allowed child has the expected model and effort.
 
 ## Install without the plugin
 
