@@ -208,7 +208,8 @@ s'ils contredisent le plancher Luna.
 | `researcher` | `gpt-6-luna` | `high` | Recherche externe à plusieurs sources |
 | `researcher_complex` (facultatif) | `gpt-6.1-sol` | `xhigh` | Synthétiser des sources contradictoires pour une décision technique importante (`researcher` est le défaut) |
 | `runner` | `gpt-6-luna` | `high` | Validations longues et lots mécaniques conséquents |
-| `builder` | `gpt-6.1-sol` | `high` | Implémentation substantielle avec validation ciblée |
+| `builder_luna` | `gpt-6-luna` | `max` | Implémentation substantielle entièrement spécifiée avec validation ciblée fiable |
+| `builder` | `gpt-6.1-sol` | `high` | Implémentation exigeant conception, arbitrage ou intégration, avec validation ciblée |
 | `strategist` | `gpt-6.1-sol` | `medium` | Cadrage complexe, décomposition et arbitrages intermédiaires |
 | `architect` | `gpt-6-astra` | `low` | Rares décisions d’architecture, strictement cadrées |
 
@@ -232,6 +233,7 @@ s'ils contredisent le plancher Luna.
     └── agents/
         ├── architect.toml
         ├── builder.toml
+        ├── builder_luna.toml
         ├── researcher.toml
         ├── researcher_complex.toml
         ├── runner.toml
@@ -251,11 +253,11 @@ s'ils contredisent le plancher Luna.
 ## Installation comme plugin
 
 > [!IMPORTANT]
-> Version actuelle du plugin : **0.8.4**.
+> Version actuelle du plugin : **0.8.5**.
 >
 > Une marketplace de dépôt approuvée installe le plugin par défaut. Codex
 > demande encore une fois votre confiance pour son hook SessionStart. Ce hook
-> configure ensuite les six profils globaux et les vérifie aux sessions suivantes.
+> configure ensuite les sept profils globaux standard et les vérifie aux sessions suivantes.
 
 Depuis le clone local, pour tester avant publication :
 
@@ -272,7 +274,7 @@ codex plugin marketplace add masskrdjn/codexskills
 Quand Codex propose d'examiner le hook fourni, accordez-lui votre confiance
 une fois si vous voulez la configuration automatique. À chaque SessionStart,
 un script local Python 3.11+ réconcilie `scout`, `researcher`, `runner`,
-`builder`, `strategist` et `architect` dans `CODEX_HOME` (ou `~/.codex`). Il ne
+`builder_luna`, `builder`, `strategist` et `architect` dans `CODEX_HOME` (ou `~/.codex`). Il ne
 fait aucun appel réseau ni mise à niveau de marketplace. Il fusionne les
 réglages compatibles, sauvegarde les fichiers modifiés sous
 `CODEX_HOME/.codexskills-backup/` et préserve les fichiers divergents avec un
@@ -419,7 +421,7 @@ Le chemin de routage a donc été réduit ; l'effet est prédit, pas encore mesu
 
 - `AGENTS.md` (environ 5 Ko) porte tout ce que demandent le triage courant et la
   délégation à un profil standard : ce qui reste à la racine, quand `scout`,
-  `researcher`, `runner` ou `builder` s'appliquent, une transmission courte, un
+  `researcher`, `runner`, `builder_luna` ou `builder` s'appliquent, une transmission courte, un
   seul `wait_agent` long et des lectures d'acceptation ciblées (une relecture
   plus large est une refaite et annule la substitution).
 - Le skill n'est lu qu'à la demande : modèle ou effort hors des profils,

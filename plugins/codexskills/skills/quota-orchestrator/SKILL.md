@@ -1,6 +1,6 @@
 ---
 name: quota-orchestrator
-description: Protocol for choosing a model or effort outside the profiles, a _complex variant, strategist, an architect consultation, an independent review, or a cost measurement. Do not read it for a local task or to delegate to a standard scout, researcher, runner, or builder: AGENTS.md is enough. Also read it when the six named agent types (scout, researcher, runner, builder, strategist, architect) are unavailable, to guide the one-time quota-orchestrator-setup. Never apply inside an already delegated subagent.
+description: Protocol for choosing a model or effort outside the profiles, a _complex variant, strategist, an architect consultation, an independent review, or a cost measurement. Do not read it for a local task or to delegate to a standard scout, researcher, runner, builder_luna, or builder: AGENTS.md is enough. Also read it when the seven named agent types (scout, researcher, runner, builder_luna, builder, strategist, architect) are unavailable, to guide the one-time quota-orchestrator-setup. Never apply inside an already delegated subagent.
 ---
 
 # Selective multi-model routing
@@ -17,8 +17,8 @@ activate it from an already delegated subagent. Communicate in the user's langua
 
 ## Required setup gate
 
-When this skill is read for routing, verify that all six named agent types are available:
-`scout`, `researcher`, `runner`, `builder`, `strategist`, and `architect`.
+When this skill is read for routing, verify that all seven named agent types are available:
+`scout`, `researcher`, `runner`, `builder_luna`, `builder`, `strategist`, and `architect`.
 
 If any profile is missing:
 
@@ -31,7 +31,7 @@ If any profile is missing:
 4. Keep the current task at the root. Use a reduced built-in fallback only if
    the user explicitly declines or postpones setup. Never emulate `architect`.
 
-Repeat this notice on later root tasks until all six profiles are available.
+Repeat this notice on later root tasks until all seven profiles are available.
 After setup, tell the user to start a new Codex task so the profiles are loaded.
 
 ## Objective
@@ -69,7 +69,8 @@ this rule.
 | Bounded review wide enough (several axes, same threshold) to amortize coordination | `scout` in bounded-review mode; otherwise root |
 | External research with multiple questions or sources | `researcher` |
 | Long independent validation | `runner` |
-| Substantial bounded implementation | `builder` |
+| Fully specified substantial implementation with reliable targeted validation | `builder_luna` (Luna Max) |
+| Implementation requiring design, tradeoffs, or integration | `builder` |
 | Complex framing, decomposition, or intermediate tradeoff on assembled context | `strategist` |
 | Exceptional conceptual decision | `architect` |
 
@@ -107,7 +108,7 @@ conclude, interrupt the child instead of duplicating the work.
 
 ## Complete profiles and reduced fallback
 
-Use the installed `scout`, `researcher`, `runner`, `builder`, `strategist`, and `architect`
+Use the installed `scout`, `researcher`, `runner`, `builder_luna`, `builder`, `strategist`, and `architect`
 profiles. `quota-orchestrator-setup` installs them in the current project with
 their fallback settings and complete contracts. Effective permissions remain
 subject to the parent runtime, which takes precedence over child sandbox defaults.
@@ -306,9 +307,11 @@ not established, not economic non observable; no universal marker is required.
 Fix only an obvious local mistake. At most three
 fix-test cycles, or two for an environment problem. Do not redesign.
 
-### Builder — `builder`, reduced fallback `worker`
+### Builder — `builder_luna` or `builder`, reduced fallback `worker`
 
-Implement an explicit scope with the smallest defensible change. Do not expand
+Use `builder_luna` for a fully specified scope with clear constraints and reliable
+targeted validation; use `builder` when design, tradeoffs, or integration remain.
+Implement the smallest defensible change. Do not expand
 architecture, APIs, schemas, or dependencies without authorization. Validate
 the change narrowly, with command, measured exit code, tested scope, and
 test-runner completion evidence (summary, expected count or terminal marker).

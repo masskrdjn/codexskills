@@ -80,6 +80,13 @@ RELEASE_0_8_2_SHA256 = {
     ".agents/skills/quota-orchestrator/SKILL.md": "0cdd8d29317adb9d39a436fa29e0063d87117633d263e237e09924171223586e",
 }
 RELEASE_0_8_2_AGENTS_BLOCK_SHA256 = "4bf6850b48660ff3bbde9594c770e142f406ed7d89be41a8bbbed1b7efb0a619"
+# Exact files of 0.8.3, unchanged in 0.8.4, before the Luna Max builder.
+RELEASE_0_8_3_SHA256 = {
+    "AGENTS.md": "0437b02d5ef7deed263bd878bce48b5802af647b8356a7318acdea88f9159464",
+    ".codex/agents/builder.toml": "fd61341b9a09720f3971c57e884d5fc18cbade15c9ea0637d65a4c5ff47bd006",
+    ".agents/skills/quota-orchestrator/SKILL.md": "05d0d90b2ee92883e3f38c7a08088d58eba989b60c6d75900d9a3a6dd600c312",
+}
+RELEASE_0_8_3_AGENTS_BLOCK_SHA256 = "f1836bb5afe82f45c6eb70cb377da77ee90cb52511f9acf2d2d547621e96cfef"
 RELEASE_0_7_AGENTS_BLOCK_SHA256 = "ed3a2cef5b69b266d417e970e8ef2533cd4a400eb121b34e8c537fa425888d91"
 LEGACY_AGENTS_BLOCK_SHA256 = "cead871fee8a8ae0179552d16770ab0344d7869de9d24c3fdbc58ef1cf4c86e5"
 RELEASE_0_5_AGENTS_BLOCK_SHA256 = "290aa11f0c6a6fd45c0a013b85a9bd11b488d1fc4c7412b63c2c64a18a7d0ec9"
@@ -126,6 +133,7 @@ def _is_legacy(path: str, content: bytes) -> bool:
         RELEASE_0_8_SHA256.get(path),
         RELEASE_0_8_1_SHA256.get(path),
         RELEASE_0_8_2_SHA256.get(path),
+        RELEASE_0_8_3_SHA256.get(path),
     )
 
 
@@ -309,7 +317,7 @@ def _merge_agents(source: bytes, target: bytes, path: Path) -> tuple[bytes, list
         end = target_text.index(END, start)
         old_block = target_text[start:end].strip("\r\n").replace("\r\n", "\n")
         old_digest = hashlib.sha256(old_block.encode("utf-8")).hexdigest()
-        if old_digest in (LEGACY_AGENTS_BLOCK_SHA256, RELEASE_0_5_AGENTS_BLOCK_SHA256, RELEASE_0_7_AGENTS_BLOCK_SHA256, RELEASE_0_8_AGENTS_BLOCK_SHA256, RELEASE_0_8_1_AGENTS_BLOCK_SHA256, RELEASE_0_8_2_AGENTS_BLOCK_SHA256):
+        if old_digest in (LEGACY_AGENTS_BLOCK_SHA256, RELEASE_0_5_AGENTS_BLOCK_SHA256, RELEASE_0_7_AGENTS_BLOCK_SHA256, RELEASE_0_8_AGENTS_BLOCK_SHA256, RELEASE_0_8_1_AGENTS_BLOCK_SHA256, RELEASE_0_8_2_AGENTS_BLOCK_SHA256, RELEASE_0_8_3_AGENTS_BLOCK_SHA256):
             merged = target_text[:start] + newline + block + newline + target_text[end:]
             return _encode(merged, bom), []
         return target, [f"{path}: bloc codexskills existant conservé car il diffère de la source"]

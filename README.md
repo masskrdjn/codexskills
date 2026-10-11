@@ -198,7 +198,8 @@ with warnings; review them explicitly if they conflict with the Luna floor.
 | `researcher` | `gpt-6-luna` | `high` | Multi-source external research |
 | `researcher_complex` (optional) | `gpt-6.1-sol` | `xhigh` | Synthesize conflicting sources for an important technical decision (`researcher` is the default) |
 | `runner` | `gpt-6-luna` | `high` | Long validations and large mechanical batches |
-| `builder` | `gpt-6.1-sol` | `high` | Substantial implementation with targeted validation |
+| `builder_luna` | `gpt-6-luna` | `max` | Fully specified substantial implementation with reliable targeted validation |
+| `builder` | `gpt-6.1-sol` | `high` | Implementation requiring design, tradeoffs, or integration, with targeted validation |
 | `strategist` | `gpt-6.1-sol` | `medium` | Complex framing, decomposition, and intermediate tradeoffs |
 | `architect` | `gpt-6-astra` | `low` | Rare, bounded architecture decisions only |
 
@@ -222,6 +223,7 @@ with warnings; review them explicitly if they conflict with the Luna floor.
     └── agents/
         ├── architect.toml
         ├── builder.toml
+        ├── builder_luna.toml
         ├── researcher.toml
         ├── researcher_complex.toml
         ├── runner.toml
@@ -241,11 +243,11 @@ with warnings; review them explicitly if they conflict with the Luna floor.
 ## Install as a plugin
 
 > [!IMPORTANT]
-> Current plugin version: **0.8.4**.
+> Current plugin version: **0.8.5**.
 >
 > An approved repository marketplace installs the plugin by default. Codex
 > still asks you to trust its bundled SessionStart hook once. That hook then
-> configures the six global profiles and checks them on later sessions.
+> configures the seven standard global profiles and checks them on later sessions.
 
 From the local checkout, to test before publishing:
 
@@ -262,8 +264,8 @@ codex plugin marketplace add masskrdjn/codexskills
 When Codex prompts you to review the bundled hook, trust it once if you want
 automatic setup. At SessionStart it runs a local Python 3.11+ script, without
 network access or marketplace upgrades. The script installs and later
-reconciles `scout`, `researcher`, `runner`, `builder`, `strategist`, and
-`architect` in `CODEX_HOME` (or `~/.codex` when unset). It merges compatible
+reconciles `scout`, `researcher`, `runner`, `builder_luna`, `builder`,
+`strategist`, and `architect` in `CODEX_HOME` (or `~/.codex` when unset). It merges compatible
 settings, backs up modified files under `CODEX_HOME/.codexskills-backup/`, and
 preserves divergent files with an actionable warning. State and a short-lived
 concurrency lock live in `PLUGIN_DATA`, or `CODEX_HOME/.codexskills-data` if
@@ -401,8 +403,8 @@ The routing path was therefore reduced, and the effect is predicted, not yet
 measured:
 
 - `AGENTS.md` (about 5 KB) carries everything everyday triage and standard
-  delegation need: what stays at the root, when `scout`, `researcher`, `runner`
-  or `builder` apply, a short handoff, a single long `wait_agent`, and targeted
+  delegation need: what stays at the root, when `scout`, `researcher`, `runner`,
+  `builder_luna`, or `builder` apply, a short handoff, a single long `wait_agent`, and targeted
   acceptance reads (a wider re-read is a redo and cancels the substitution).
 - The skill is read on demand only: model or effort outside the profiles,
   `_complex` variants, `strategist`, `architect`, independent review, cost

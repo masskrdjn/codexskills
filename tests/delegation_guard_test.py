@@ -41,6 +41,7 @@ class DelegationGuard(unittest.TestCase):
                       "transcript_path": str(self.transcript),
                       "tool_input": {"agent_type": "builder", "fork_turns": "none"}}
         self.profile("builder", "gpt-6.1-sol", "high")
+        self.profile("builder_luna", "gpt-6-luna", "max")
         self.profile("researcher", "gpt-6-luna", "high")
 
     def write_context(self, extra=()):
@@ -80,6 +81,10 @@ class DelegationGuard(unittest.TestCase):
 
     def test_luna_is_allowed(self):
         self.event["tool_input"]["agent_type"] = "researcher"
+        self.assertIsNone(self.run_hook())
+
+    def test_luna_max_builder_is_allowed(self):
+        self.event["tool_input"]["agent_type"] = "builder_luna"
         self.assertIsNone(self.run_hook())
 
     def test_different_effort_is_allowed(self):
