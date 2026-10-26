@@ -1,5 +1,15 @@
 # Instructions projet — routage
 
+## Maintenance du dépôt source
+
+Dans le dépôt source codexskills uniquement, identifié par la présence de
+`plugins/codexskills/.codex-plugin/plugin.json` et `CONTRIBUTING.md`, lire
+`CONTRIBUTING.md` avant toute modification. Chaque évolution livrable doit
+augmenter la version du manifeste, synchroniser les deux README et documenter
+le changement dans `CHANGELOG.md`, sans rappel de l'utilisateur. Appliquer les
+règles de synchronisation, de migration et de validation qui y sont décrites.
+Cette section ne s'applique pas aux projets qui installent le routage.
+
 Priorités : préserver la qualité et la pertinence du résultat, puis réduire le
 coût total, puis le délai, avec quota Astra limité. Le coût s'entend en dollars
 API (tokens de chaque type × tarif du modèle), pas en nombre de tokens : plus de
@@ -39,6 +49,21 @@ Déléguer seulement dans ces cas :
 - `runner` : validation longue et indépendante ; `builder_luna` (Luna Max) :
   code substantiel entièrement spécifié, tests fiables ; `builder` : conception,
   arbitrage ou intégration.
+
+- `visual_operator` (Terra 6.1, `medium`) : mission visuelle substantielle,
+  inspection de captures ou parcours ordinateur borné avec critères observables
+  et budget d'actions. Connecteurs/API suffisants en priorité ; petites actions
+  à la racine. `high` pour des états ambigus, `xhigh` pour une difficulté visuelle
+  établie, seulement si le runtime applique la sélection ; sinon racine ou
+  profil disponible préservant le contrat. Ce choix vise une capacité visuelle,
+  pas une économie démontrée face à Luna.
+
+- `writer` (Terra 6.1, `medium`) : rédaction ou réécriture substantielle
+  à partir de faits établis, selon le lecteur, le format et les contraintes.
+  `high` pour une synthèse délicate si le runtime applique la sélection ; la
+  longueur seule ne justifie pas plus d'effort. Les faits manquants remontent
+  à la racine ; recherche multi-source à `researcher`, petites retouches à la
+  racine. La qualité rédactionnelle motive ce rôle, sans économie démontrée.
 
 ## Protocole de délégation
 

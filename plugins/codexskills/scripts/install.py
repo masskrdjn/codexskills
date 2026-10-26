@@ -90,6 +90,13 @@ RELEASE_0_8_3_AGENTS_BLOCK_SHA256 = "f1836bb5afe82f45c6eb70cb377da77ee90cb52511f
 RELEASE_0_7_AGENTS_BLOCK_SHA256 = "ed3a2cef5b69b266d417e970e8ef2533cd4a400eb121b34e8c537fa425888d91"
 LEGACY_AGENTS_BLOCK_SHA256 = "cead871fee8a8ae0179552d16770ab0344d7869de9d24c3fdbc58ef1cf4c86e5"
 RELEASE_0_5_AGENTS_BLOCK_SHA256 = "290aa11f0c6a6fd45c0a013b85a9bd11b488d1fc4c7412b63c2c64a18a7d0ec9"
+
+# Exact 0.8.5 routing instructions, before the Terra visual role.
+RELEASE_0_8_5_SHA256 = {
+    "AGENTS.md": "49711f5446936565bdec0287589ee84d1eb9cf694c6be684cd4820e118e29f8f",
+    ".agents/skills/quota-orchestrator/SKILL.md": "743b10942503d4729ccbc2d819ade01973c8a53450958b68c1b5cb66badb64b2",
+}
+RELEASE_0_8_5_AGENTS_BLOCK_SHA256 = "c8af99d30964eaafe93808eb17a87fa86cb72ddc453fee23edfdf56a85012e56"
 # The wait bounds are one atomic group: Codex refuses a configuration unless min <= default <= max,
 # so they are added only when the user has none of the three and defines multi_agent_v2 nowhere else.
 WAIT_SECTION = ("features", "multi_agent_v2")
@@ -134,6 +141,7 @@ def _is_legacy(path: str, content: bytes) -> bool:
         RELEASE_0_8_1_SHA256.get(path),
         RELEASE_0_8_2_SHA256.get(path),
         RELEASE_0_8_3_SHA256.get(path),
+        RELEASE_0_8_5_SHA256.get(path),
     )
 
 
@@ -317,7 +325,7 @@ def _merge_agents(source: bytes, target: bytes, path: Path) -> tuple[bytes, list
         end = target_text.index(END, start)
         old_block = target_text[start:end].strip("\r\n").replace("\r\n", "\n")
         old_digest = hashlib.sha256(old_block.encode("utf-8")).hexdigest()
-        if old_digest in (LEGACY_AGENTS_BLOCK_SHA256, RELEASE_0_5_AGENTS_BLOCK_SHA256, RELEASE_0_7_AGENTS_BLOCK_SHA256, RELEASE_0_8_AGENTS_BLOCK_SHA256, RELEASE_0_8_1_AGENTS_BLOCK_SHA256, RELEASE_0_8_2_AGENTS_BLOCK_SHA256, RELEASE_0_8_3_AGENTS_BLOCK_SHA256):
+        if old_digest in (LEGACY_AGENTS_BLOCK_SHA256, RELEASE_0_5_AGENTS_BLOCK_SHA256, RELEASE_0_7_AGENTS_BLOCK_SHA256, RELEASE_0_8_AGENTS_BLOCK_SHA256, RELEASE_0_8_1_AGENTS_BLOCK_SHA256, RELEASE_0_8_2_AGENTS_BLOCK_SHA256, RELEASE_0_8_3_AGENTS_BLOCK_SHA256, RELEASE_0_8_5_AGENTS_BLOCK_SHA256):
             merged = target_text[:start] + newline + block + newline + target_text[end:]
             return _encode(merged, bom), []
         return target, [f"{path}: bloc codexskills existant conservé car il diffère de la source"]
