@@ -87,6 +87,27 @@ class DelegationGuard(unittest.TestCase):
         self.event["tool_input"]["agent_type"] = "builder_luna"
         self.assertIsNone(self.run_hook())
 
+    def test_terra_profile_is_allowed_and_identical_pair_is_denied(self):
+        source = PLUGIN / 'templates/.codex/agents/visual_operator.toml'
+        (self.home / 'agents/visual_operator.toml').write_bytes(source.read_bytes())
+        self.event['tool_input']['agent_type'] = 'visual_operator'
+        self.assertIsNone(self.run_hook())
+        self.context.update(model='gpt-6.1-terra', effort='medium')
+        self.event['model'] = 'gpt-6.1-terra'
+        self.write_context()
+        self.assertIn('même modèle et même effort', self.run_hook())
+
+    def test_terra_writer_preserves_profile_effort_and_same_pair_guard(self):
+        source = PLUGIN / 'templates/.codex/agents/writer.toml'
+        (self.home / 'agents/writer.toml').write_bytes(source.read_bytes())
+        self.event['tool_input'].update(agent_type='writer', reasoning_effort='high')
+        self.assertIsNone(self.run_hook())
+        self.context.update(model='gpt-6.1-terra', effort='medium')
+        self.event['model'] = 'gpt-6.1-terra'
+        self.write_context()
+        # The custom medium profile overrides the explicit high request.
+        self.assertIn('même modèle et même effort', self.run_hook())
+
     def test_different_effort_is_allowed(self):
         self.profile("builder", "gpt-6.1-sol", "medium")
         self.assertIsNone(self.run_hook())

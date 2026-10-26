@@ -2,6 +2,9 @@
 
 [Français](README.fr.md)
 
+To modify this repository, read [CONTRIBUTING.md](CONTRIBUTING.md).
+See [CHANGELOG.md](CHANGELOG.md) for changes.
+
 A Codex configuration template that routes work to specialized agents only when delegation is likely to preserve quality while reducing total cost or latency. The primary agent remains responsible for decisions, integration, and user communication.
 
 ## Routing policy
@@ -22,7 +25,7 @@ insufficient, and settings must not be artificially changed to bypass it.
 ## Compare models independently of roles
 
 Roles define missions, restrictions, and deliverables. They do not rank models
-or effort levels. Compare all five models for the task; this project establishes
+or effort levels. Compare all six models for the task; this project establishes
 no universal ranking of quality or token consumption.
 
 | Model | Project candidacy | Boundary to preserve |
@@ -31,6 +34,7 @@ no universal ranking of quality or token consumption.
 | GPT-6 Sol | Ordinary candidate for technical missions and complex interactions, independently of role | Same quality gate and comparison protocol as Sol 6.1, no proof tied to its age; same rates as 6.1 except cached input, 2x more expensive. |
 | GPT-5.6 Sol | Ordinary candidate for reasoning, framing, and other missions it can fulfill | Same requirements as other Sol models; no compatibility-only exception or presumed inferiority; rate is 2x that of 6.1 (promotional, see the cost rule). |
 | GPT-6.1 Sol | Candidate across implementation, research, and decisions | Being newer establishes neither fewer tokens nor an optimal replacement for other Sol models. |
+| GPT-6.1 Terra | Vision through `visual_operator` and clear writing through `writer` | `medium` fallback; `high`/`xhigh` for established difficulty. Half the Sol 6.1 token price; no demonstrated project savings. |
 | GPT-6 Astra | An `architect` consultation when extra capacity addresses an identified difficulty | Preserve quota and architect restrictions: no exploration, commands, writing, or delegation. 5x the 6.1 rate (10x cached), 100x Luna. |
 
 Verify the models and efforts actually available in the runtime. API support
@@ -147,6 +151,66 @@ project savings, which remain to be measured. The Luna high floor is a user pref
 grid remains a hypothesis to validate, not a comparative recommendation proven
 by these sources.
 
+### GPT-6.1 Terra: visual tasks
+
+Terra is a candidate when image understanding or precise computer interaction
+is needed: screenshot inspection, layout validation, and bounded UI workflows.
+The `visual_operator` role does not replace `builder` for design and integration
+or Luna for textual or mechanical work. Prefer sufficient connectors and APIs;
+small actions stay with the primary. Delegation must amortize coordination or
+serve an explicit visual capability need, with an action budget and observable
+stop condition.
+
+| Task | Candidate Terra effort | Condition |
+|---|---|---|
+| Explicit workflow, readable screenshots, direct validation | `medium` (fallback profile) | Observable criteria and available tools |
+| Ambiguous states, multiple visual constraints | `high` | Ambiguity identified before dispatch |
+| Difficult spatial or perceptual reasoning | `xhigh` | Established difficulty and planned validation |
+
+`low` may be evaluated for simple contracts when delegation is justified;
+`max` is not automatic. The API documents `none`, `low`, `medium`, `high`,
+`xhigh`, `max`; this session's runtime also offers `ultra`, absent from the
+API model page. Do not equate these lists. A locked profile stays at `medium`;
+do not claim an unapplied effort override. Select an available profile that
+preserves the contract, or keep the work with the primary.
+
+Sources consulted October 26, 2026:
+[Terra](https://developers.openai.com/api/docs/models/gpt-6.1-terra),
+[Luna](https://developers.openai.com/api/docs/models/gpt-6-luna),
+[Sol 6.1](https://developers.openai.com/api/docs/models/gpt-6.1-sol),
+[changelog](https://developers.openai.com/api/docs/changelog).
+Terra's page highlights vision, computer interaction, and clear writing. This
+does not establish general superiority or this project's cost per accepted
+result. Terra standard prices per million tokens: input $1, cached input $0.05,
+30-minute cache writes $1.25, output including reasoning $5. At equal token
+counts and service level, Terra costs half as much as Sol 6.1, and 10 times Luna
+for input, writes, and output, 5 times Luna for cached reads. Compare full cost
+after validation; token prices alone do not prove savings. Other prices above
+retain their stated observation date; no project benchmark is added here.
+
+
+### GPT-6.1 Terra: clear writing
+
+The `writer` role uses Terra for substantial drafting, rewriting, and synthesis
+from established facts: documentation, explanations, and user-facing text.
+Provide the audience, objective, sources, constraints, and acceptance criteria
+before dispatch. New factual research stays with `researcher`; technical decisions
+stay with the primary or the appropriate role. Small edits stay at the root,
+and Luna remains a candidate when its capacity suffices. The model page's clear
+writing capability supports this candidacy, not demonstrated superiority.
+
+| Writing task | Candidate Terra effort | Validation |
+|---|---|---|
+| Scoped drafting or rewriting for a known audience | `medium` (fallback profile) | Factual fidelity, clarity, tone, and format |
+| Synthesis of established material with delicate nuances or interdependent constraints | `high` if applied by the runtime | Preserve meaning, caveats, numbers, and provenance |
+
+Length alone does not justify `high`, `xhigh`, or `max`. Missing or contradictory
+facts are reported to the primary, never invented. The same effort-override and
+full-cost rules as for `visual_operator` apply. The role does not publish or send
+text to third parties without explicit authorization. This candidacy is based
+on the [Terra model page](https://developers.openai.com/api/docs/models/gpt-6.1-terra),
+consulted October 26, 2026; quality and cost benefits remain unmeasured.
+
 ## Measure cost without conflating tokens, price, and quality
 
 This revision measures no savings. A comparison requires
@@ -200,6 +264,8 @@ with warnings; review them explicitly if they conflict with the Luna floor.
 | `runner` | `gpt-6-luna` | `high` | Long validations and large mechanical batches |
 | `builder_luna` | `gpt-6-luna` | `max` | Fully specified substantial implementation with reliable targeted validation |
 | `builder` | `gpt-6.1-sol` | `high` | Implementation requiring design, tradeoffs, or integration, with targeted validation |
+| `visual_operator` | `gpt-6.1-terra` | `medium` | Visual inspection and bounded UI workflows; select `high`/`xhigh` according to difficulty and runtime support |
+| `writer` | `gpt-6.1-terra` | `medium` | Drafting, rewriting, and synthesis from established facts; select `high` according to difficulty and runtime support |
 | `strategist` | `gpt-6.1-sol` | `medium` | Complex framing, decomposition, and intermediate tradeoffs |
 | `architect` | `gpt-6-astra` | `low` | Rare, bounded architecture decisions only |
 
@@ -229,6 +295,8 @@ with warnings; review them explicitly if they conflict with the Luna floor.
         ├── runner.toml
         ├── scout.toml
         ├── scout_complex.toml
+        ├── visual_operator.toml
+        ├── writer.toml
         └── strategist.toml
 ```
 
@@ -243,11 +311,11 @@ with warnings; review them explicitly if they conflict with the Luna floor.
 ## Install as a plugin
 
 > [!IMPORTANT]
-> Current plugin version: **0.8.5**.
+> Current plugin version: **0.9.0**.
 >
 > An approved repository marketplace installs the plugin by default. Codex
 > still asks you to trust its bundled SessionStart hook once. That hook then
-> configures the seven standard global profiles and checks them on later sessions.
+> configures the nine standard global profiles and checks them on later sessions.
 
 From the local checkout, to test before publishing:
 
@@ -265,7 +333,7 @@ When Codex prompts you to review the bundled hook, trust it once if you want
 automatic setup. At SessionStart it runs a local Python 3.11+ script, without
 network access or marketplace upgrades. The script installs and later
 reconciles `scout`, `researcher`, `runner`, `builder_luna`, `builder`,
-`strategist`, and `architect` in `CODEX_HOME` (or `~/.codex` when unset). It merges compatible
+`visual_operator`, `writer`, `strategist`, and `architect` in `CODEX_HOME` (or `~/.codex` when unset). It merges compatible
 settings, backs up modified files under `CODEX_HOME/.codexskills-backup/`, and
 preserves divergent files with an actionable warning. State and a short-lived
 concurrency lock live in `PLUGIN_DATA`, or `CODEX_HOME/.codexskills-data` if

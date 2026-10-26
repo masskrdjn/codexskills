@@ -59,6 +59,8 @@ contourner cette règle.
 | Validation assez longue et indépendante pour amortir la coordination | `runner` |
 | Implémentation substantielle entièrement spécifiée, avec validation fiable | `builder_luna` (Luna Max) |
 | Implémentation exigeant conception, arbitrage ou intégration | `builder`, validation ciblée comprise |
+| Mission visuelle substantielle avec budget et arrêt observable, outils adaptés disponibles | `visual_operator` (Terra 6.1 `medium`) ; connecteurs/API en priorité |
+| Rédaction ou réécriture substantielle à partir de faits établis, lecteur et critères définis | `writer` (Terra 6.1 `medium`) ; petites retouches à la racine |
 | Consultation documentaire ponctuelle | Racine directement |
 | Recherche documentaire à plusieurs questions ou sources | `researcher` |
 | Cadrage complexe, décomposition ou arbitrage intermédiaire sur contexte assemblé | `strategist` |
@@ -161,7 +163,7 @@ est déclarée comme telle : ne pas présenter son rapport comme l'ayant fondée
 ## Comparer les modèles indépendamment des rôles
 
 Les rôles définissent les missions, restrictions et livrables. Ils ne classent
-ni les modèles ni les efforts. Les cinq modèles suivants sont à comparer pour
+ni les modèles ni les efforts. Les six modèles suivants sont à comparer pour
 la tâche; aucune hiérarchie universelle de qualité ou de tokens n'est établie ici.
 
 | Modèle | Candidature dans le projet | Limite à conserver |
@@ -170,6 +172,7 @@ la tâche; aucune hiérarchie universelle de qualité ou de tokens n'est établi
 | GPT-6 Sol | Candidat ordinaire pour les missions techniques et les interactions complexes, indépendamment du rôle | Même exigence de qualité et même protocole comparatif que Sol 6.1, sans preuve liée à son ancienneté ; mêmes tarifs que 6.1 sauf le cache, 2× plus cher. |
 | GPT-5.6 Sol | Candidat ordinaire pour le raisonnement, le cadrage et les autres missions qu'il peut remplir | Même exigence que les autres Sol; ni exception de compatibilité ni inférieur présumé ; tarif 2× celui de 6.1 (promotionnel, voir règle de coût). |
 | GPT-6.1 Sol | Candidat transversal pour l'implémentation, la recherche et les décisions | Sa nouveauté ne prouve ni moins de tokens ni un remplacement optimal des autres Sol. |
+| GPT-6.1 Terra | Vision via `visual_operator` et rédaction claire via `writer` | `medium` par défaut ; `high`/`xhigh` selon difficulté établie. Tarif 2× inférieur à Sol 6.1, sans économie projet démontrée. |
 | GPT-6 Astra | Consultation `architect` lorsque la capacité supplémentaire répond à une difficulté identifiée | Quota et restrictions architect; pas d'exploration, commande, écriture ni délégation. 5× le tarif de 6.1 (10× en cache), 100× Luna. |
 
 Vérifier les modèles et efforts réellement disponibles dans le runtime.
@@ -291,6 +294,67 @@ d'évaluations externes n'établissent une économie du projet, qui reste à
 mesurer; le plancher Luna high est une préférence utilisateur distincte des
 exemples documentaires. La grille reste une hypothèse
 à valider, pas une recommandation comparative prouvée par ces sources.
+
+### GPT-6.1 Terra : missions visuelles
+
+Terra est candidat lorsque la vision ou l'usage précis d'une interface est
+nécessaire : inspection de captures, validation de mise en page et parcours
+ordinateur bornés. Le rôle `visual_operator` ne remplace ni `builder` pour la
+conception et l'intégration ni Luna pour le travail textuel ou mécanique.
+Utiliser d'abord les connecteurs et API suffisants ; une petite action reste
+à la racine. La délégation doit amortir sa coordination ou répondre à un besoin
+explicite de capacité visuelle, avec budget d'actions et arrêt observable.
+
+| Mission | Effort Terra candidat | Condition |
+|---|---|---|
+| Parcours explicite, captures lisibles, validation directe | `medium` (profil de secours) | Critères observables et outils disponibles |
+| États ambigus, contraintes visuelles multiples | `high` | Ambiguïté identifiée avant lancement |
+| Raisonnement spatial ou perceptif difficile | `xhigh` | Difficulté établie et validation prévue |
+
+`low` peut être évalué pour un contrat simple si une délégation se justifie ;
+`max` n'est pas automatique. L'API documente `none`, `low`, `medium`, `high`,
+`xhigh`, `max` ; le runtime de cette session propose aussi `ultra`, absent de
+la fiche API : ne pas assimiler les deux. Un profil verrouillé reste `medium` ;
+un override non appliqué n'autorise pas à annoncer `high` ou `xhigh`. Choisir
+un profil disponible qui conserve le contrat ou garder la mission à la racine.
+
+Sources consultées le 26 octobre 2026 :
+[Terra](https://developers.openai.com/api/docs/models/gpt-6.1-terra),
+[Luna](https://developers.openai.com/api/docs/models/gpt-6-luna),
+[Sol 6.1](https://developers.openai.com/api/docs/models/gpt-6.1-sol),
+[changelog](https://developers.openai.com/api/docs/changelog).
+La fiche Terra met en avant vision, ordinateur et rédaction claire. Cela ne
+prouve ni une supériorité générale ni le coût par résultat accepté du projet.
+Tarifs Terra standard par million de tokens : entrée 1 $, cache lu 0,05 $,
+écriture cache 30 minutes 1,25 $, sortie avec raisonnement 5 $. À tokens et
+service identiques, Terra coûte la moitié de Sol 6.1 et 10 fois Luna en entrée,
+écriture et sortie, 5 fois Luna en cache lu. Comparer le coût complet après
+validation, sans déduire une économie du seul tarif. Les autres tarifs ci-dessus
+conservent leur date de relevé ; aucun benchmark du projet n'est ajouté ici.
+
+### GPT-6.1 Terra : rédaction claire
+
+Le rôle `writer` utilise Terra pour la rédaction, la réécriture et la synthèse
+substantielles à partir de faits établis : documentation, explications et textes
+destinés aux utilisateurs. Le lecteur, l'objectif, les sources, les contraintes
+et les critères d'acceptation sont transmis avant le lancement. La recherche
+de nouveaux faits reste à `researcher` ; les décisions techniques restent à la
+racine ou au rôle approprié. Les petites retouches restent à la racine, et Luna
+reste candidat si sa capacité suffit. Une mention de « rédaction claire » dans
+la fiche modèle justifie cette candidature, pas une supériorité mesurée.
+
+| Mission de rédaction | Effort Terra candidat | Validation |
+|---|---|---|
+| Rédaction ou réécriture cadrée, public identifié | `medium` (profil de secours) | Fidélité aux faits, clarté, ton et format |
+| Synthèse de plusieurs éléments établis, nuances ou contraintes interdépendantes | `high` si appliqué par le runtime | Préservation du sens, des réserves, des chiffres et de la provenance |
+
+La longueur seule ne justifie pas `high`, `xhigh` ou `max`. Les faits manquants
+ou contradictoires sont signalés à la racine ; le writer ne les invente pas.
+Les mêmes règles d'override et de comparaison du coût complet que pour
+`visual_operator` s'appliquent. Le rôle ne publie ni n'envoie à un tiers sans
+autorisation explicite. La source de cette candidature est la
+[fiche Terra](https://developers.openai.com/api/docs/models/gpt-6.1-terra)
+consultée le 26 octobre 2026 ; le gain de qualité ou de coût reste à mesurer.
 
 ## Mesurer le coût sans confondre tokens, prix et qualité
 
