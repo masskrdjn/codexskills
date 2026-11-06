@@ -7,6 +7,12 @@ Les évolutions sont décrites dans [CHANGELOG.md](CHANGELOG.md).
 
 Un modèle de configuration Codex qui confie le travail à des agents spécialisés uniquement lorsque la délégation devrait préserver la qualité tout en réduisant le coût total ou le délai. L’agent principal reste responsable des décisions, de l’intégration et de la communication avec l’utilisateur.
 
+## Démarrage rapide
+
+1. Ajoutez le marketplace du dépôt : `codex plugin marketplace add masskrdjn/codexskills`. Depuis une copie locale, utilisez plutôt `codex plugin marketplace add .`.
+2. Quand Codex le demande, examinez puis approuvez le hook SessionStart pour configurer les neuf profils globaux standard. Il requiert Python 3.11 ou ultérieur, disponible sous la commande `python`.
+3. Ouvrez une nouvelle tâche Codex pour charger les profils. Consultez [Utilisation](#utilisation) pour comprendre l’application des réglages et des consignes. Pour une installation manuelle ou limitée au projet, consultez [Installation sans plugin](#installation-sans-plugin).
+
 ## Politique de routage
 
 Priorités, dans l’ordre :
@@ -322,7 +328,7 @@ s'ils contredisent le plancher Luna.
 ## Installation comme plugin
 
 > [!IMPORTANT]
-> Version actuelle du plugin : **0.9.0**.
+> Version actuelle du plugin : **0.9.1**.
 >
 > Une marketplace de dépôt approuvée installe le plugin par défaut. Codex
 > demande encore une fois votre confiance pour son hook SessionStart. Ce hook

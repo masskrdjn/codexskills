@@ -7,6 +7,12 @@ See [CHANGELOG.md](CHANGELOG.md) for changes.
 
 A Codex configuration template that routes work to specialized agents only when delegation is likely to preserve quality while reducing total cost or latency. The primary agent remains responsible for decisions, integration, and user communication.
 
+## Quick start
+
+1. Add the repository marketplace: `codex plugin marketplace add masskrdjn/codexskills`. From a local checkout, use `codex plugin marketplace add .` instead.
+2. When Codex asks, review and trust the bundled SessionStart hook to configure the nine standard global profiles. It requires Python 3.11 or newer available as `python`.
+3. Start a new Codex task to load the profiles. See [Usage](#usage) for how settings and instructions apply. For manual or project-scoped setup, see [Install without the plugin](#install-without-the-plugin).
+
 ## Routing policy
 
 Priorities, in order:
@@ -311,7 +317,7 @@ with warnings; review them explicitly if they conflict with the Luna floor.
 ## Install as a plugin
 
 > [!IMPORTANT]
-> Current plugin version: **0.9.0**.
+> Current plugin version: **0.9.1**.
 >
 > An approved repository marketplace installs the plugin by default. Codex
 > still asks you to trust its bundled SessionStart hook once. That hook then

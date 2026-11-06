@@ -5,6 +5,11 @@ La version courante est définie dans le manifeste du plugin. Voir
 Les fixtures conservent les anciennes sources ; cet historique ne reconstitue
 pas les changements des versions précédentes.
 
+## 0.9.1 — 2026-11-06 (préparée localement, non publiée)
+
+- Ajout d’un démarrage rapide dans les README anglais et français, avec des liens
+  directs vers les options d’installation et les consignes d’utilisation.
+
 ## 0.9.0 — 2026-10-26 (préparée localement, non publiée)
 
 - Ajout de GPT-6.1 Terra avec `visual_operator` pour les missions visuelles et

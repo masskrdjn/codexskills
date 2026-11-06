@@ -1,6 +1,6 @@
 {
   "name": "codexskills",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Selective multi-model routing with automatic global profile reconciliation and a PreToolUse delegation guard after hook trust.",
   "author": {
     "name": "masskrdjn",
