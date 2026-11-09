@@ -1,5 +1,9 @@
 # Selective Multi-Model Routing for Codex
 
+> [!IMPORTANT]
+> **CodexSkills is deprecated.** QuotaOrchestrator supports both Codex and Claude Code.
+> [Migrate to QuotaOrchestrator](https://github.com/masskrdjn/QuotaOrchestrator/blob/main/README.md#migrate-from-codexskills).
+
 [Français](README.fr.md)
 
 To modify this repository, read [CONTRIBUTING.md](CONTRIBUTING.md).
@@ -317,7 +321,7 @@ with warnings; review them explicitly if they conflict with the Luna floor.
 ## Install as a plugin
 
 > [!IMPORTANT]
-> Current plugin version: **0.9.1**.
+> Current plugin version: **0.9.2**.
 >
 > An approved repository marketplace installs the plugin by default. Codex
 > still asks you to trust its bundled SessionStart hook once. That hook then

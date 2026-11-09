@@ -1,5 +1,9 @@
 # Routage multi-modèles sélectif pour Codex
 
+> [!IMPORTANT]
+> **CodexSkills est déprécié.** QuotaOrchestrator prend en charge Codex et Claude Code.
+> [Migrer vers QuotaOrchestrator](https://github.com/masskrdjn/QuotaOrchestrator/blob/main/README.fr.md#migrer-depuis-codexskills).
+
 [English](README.md)
 
 Pour modifier ce dépôt : lire [CONTRIBUTING.md](CONTRIBUTING.md).
@@ -328,7 +332,7 @@ s'ils contredisent le plancher Luna.
 ## Installation comme plugin
 
 > [!IMPORTANT]
-> Version actuelle du plugin : **0.9.1**.
+> Version actuelle du plugin : **0.9.2**.
 >
 > Une marketplace de dépôt approuvée installe le plugin par défaut. Codex
 > demande encore une fois votre confiance pour son hook SessionStart. Ce hook

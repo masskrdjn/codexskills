@@ -5,6 +5,10 @@ La version courante est définie dans le manifeste du plugin. Voir
 Les fixtures conservent les anciennes sources ; cet historique ne reconstitue
 pas les changements des versions précédentes.
 
+## 0.9.2 — 2026-11-09
+
+- Dépréciation du plugin. Les deux README renvoient vers le guide de migration QuotaOrchestrator.
+
 ## 0.9.1 — 2026-11-06 (préparée localement, non publiée)
 
 - Ajout d’un démarrage rapide dans les README anglais et français, avec des liens
